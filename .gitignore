@@ -1,5 +1,5 @@
 node_modules/
-frontend/generated/
+frontend/basicFrontEnd/
 node_modules
 HELP.md
 target/
