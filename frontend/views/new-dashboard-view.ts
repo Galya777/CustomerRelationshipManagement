@@ -1,7 +1,5 @@
 import { html, LitElement, TemplateResult } from 'lit';
 import { customElement, state, property } from 'lit/decorators.js';
-import { Router } from '@vaadin/router';
-import type { GridColumnBodyLitRenderer, GridColumn, GridDataProviderCallback, GridDataProviderParams } from '@vaadin/grid';
 import '@vaadin/button';
 import '@vaadin/grid';
 import '@vaadin/icon';
@@ -12,6 +10,7 @@ import '@vaadin/dialog';
 import '@vaadin/select';
 import '@vaadin/list-box';
 import '@vaadin/item';
+import {columnBodyRenderer} from "@vaadin/grid/lit";
 
 declare global {
   interface HTMLElementTagNameMap {

@@ -1,17 +1,10 @@
 import { Route } from '@vaadin/router';
-import type { RouterLocation, Commands } from '@vaadin/router';
+import type { ActionFn, Commands, Context } from '@vaadin/router'; // Remove RouterLocation, add Context
 
-// Type definitions
-type RouteAction = (context: RouterLocation, commands: Commands) => Promise<unknown>;
+// Use ActionFn type from @vaadin/router
+type RouteAction = ActionFn;
 
-declare global {
-  interface HTMLElementTagNameMap {
-    'login-view': HTMLElement;
-    'register-view': HTMLElement;
-    'new-dashboard-view': HTMLElement;
-    'main-layout': HTMLElement;
-  }
-}
+// Custom element types are defined in their respective component files
 
 // Check if user is authenticated
 const isAuthenticated = (): boolean => {
@@ -30,7 +23,7 @@ const publicRoutes: Route[] = [
     path: '/login',
     component: 'login-view',
     name: 'login',
-    action: (async (context: RouterLocation, commands: Commands) => {
+    action: (async (_, commands) => {
       if (isAuthenticated()) {
         return commands.redirect('/');
       }
@@ -42,7 +35,7 @@ const publicRoutes: Route[] = [
     path: '/register',
     component: 'register-view',
     name: 'register',
-    action: (async (context: RouterLocation, commands: Commands) => {
+    action: (async (_, commands) => {
       if (isAuthenticated()) {
         return commands.redirect('/');
       }
@@ -61,7 +54,7 @@ const protectedRoutes: Route[] = [
       {
         path: '/',
         component: 'new-dashboard-view',
-        action: (async (context: RouterLocation, commands: Commands) => {
+        action: (async (_: Context, commands: Commands) => {
           if (!isAuthenticated()) {
             return commands.redirect('/login');
           }
@@ -76,7 +69,7 @@ const protectedRoutes: Route[] = [
 // Fallback route for unknown paths
 const fallbackRoute: Route = {
   path: '(.*)',
-  action: ((context: RouterLocation, commands: Commands) => {
+  action: ((_: Context, commands: Commands) => {
     return commands.redirect(isAuthenticated() ? '/' : '/login');
   }) as RouteAction
 };
