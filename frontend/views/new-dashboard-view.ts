@@ -37,12 +37,16 @@ interface Customer {
 
 @customElement('new-dashboard-view')
 export class NewDashboardView extends LitElement {
-  @state() private user: User | null = null;
+  @state() 
+  // @ts-ignore - Will be used later
+  private user: User | null = null;
   @state() private customers: Customer[] = [];
   @state() private selectedCustomer: Customer | null = null;
   @state() private showCustomerDialog = false;
   @state() private searchQuery = '';
-  @state() private isLoading = true;
+  @state()
+  // @ts-ignore - Will be used later
+  private isLoading = true;
   
   // Filtered customers based on search query
   private get filteredCustomers(): Customer[] {
