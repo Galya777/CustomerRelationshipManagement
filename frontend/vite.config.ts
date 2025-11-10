@@ -1,13 +1,32 @@
 import { defineConfig } from 'vite';
 import { resolve } from 'path';
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
+import typescript from '@rollup/plugin-typescript';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 export default defineConfig({
+  logLevel: 'warn',
   root: '.',
   publicDir: 'public',
   server: {
     port: 3000,
     strictPort: true,
+    open: true,
+    fs: {
+      // Allow serving files from one level up from the package root
+      allow: ['..'],
+    },
     proxy: {
+      // Serve WebComponents polyfill
+      '^/node_modules/@webcomponents/.*': {
+        target: 'http://localhost:3000',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/node_modules\//, '/node_modules/')
+      },
+      // API proxy
       '/api': {
         target: 'http://localhost:8081',
         changeOrigin: true,
@@ -21,9 +40,56 @@ export default defineConfig({
     rollupOptions: {
       input: {
         main: resolve(__dirname, 'index.html'),
-        login: resolve(__dirname, 'index.html'),
-        register: resolve(__dirname, 'index.html')
+        app: resolve(__dirname, 'src/main.ts')
+      },
+      output: {
+        entryFileNames: 'assets/[name]-[hash].js',
+        chunkFileNames: 'assets/[name]-[hash].js',
+        assetFileNames: 'assets/[name]-[hash][extname]',
+        manualChunks: {
+          vendor: ['@vaadin/router', 'lit']
+        }
       }
     }
-  }
+  },
+  optimizeDeps: {
+    include: [
+      '@vaadin/router',
+      'lit',
+      '@vaadin/button',
+      '@vaadin/text-field',
+      '@vaadin/email-field',
+      '@vaadin/dialog',
+      '@vaadin/select',
+      '@vaadin/list-box',
+      '@vaadin/item',
+      '@vaadin/icon',
+      '@vaadin/icons',
+      '@webcomponents/webcomponentsjs'
+    ],
+    esbuildOptions: {
+      target: 'es2020',
+      supported: {
+        'top-level-await': true
+      }
+    }
+  },
+  resolve: {
+    alias: {
+      '@': resolve(__dirname, './src')
+    },
+    extensions: ['.ts', '.js', '.json', '.mjs']
+  },
+  define: {
+    'process.env': {}
+  },
+  esbuild: {
+    jsxInject: `import { html, css, LitElement } from 'lit';`
+  },
+  plugins: [
+    typescript({
+      include: ['**/*.ts', '**/*.d.ts'],
+      tsconfig: './tsconfig.json'
+    })
+  ]
 });

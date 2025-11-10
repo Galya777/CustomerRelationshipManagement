@@ -4,7 +4,10 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "copy:webcomponents": "node --experimental-modules --no-warnings scripts/copy-webcomponents.js",
+    "predev": "npm run copy:webcomponents",
     "dev": "vite",
+    "prebuild": "npm run copy:webcomponents",
     "build": "tsc && vite build",
     "preview": "vite preview"
   },
@@ -19,11 +22,14 @@
     "@vaadin/router": "^1.7.5",
     "@vaadin/select": "^24.9.5",
     "@vaadin/text-field": "^24.9.5",
-    "lit": "^2.8.0"
+    "@webcomponents/webcomponentsjs": "^2.8.0",
+    "lit": "^3.1.0"
   },
   "devDependencies": {
-    "@types/node": "^18.16.16",
-    "typescript": "^5.0.4",
-    "vite": "^4.3.9"
+    "@rollup/plugin-typescript": "^12.0.0",
+    "@types/node": "^20.0.0",
+    "fs-extra": "^11.0.0",
+    "typescript": "^5.0.0",
+    "vite": "^5.0.0"
   }
 }
