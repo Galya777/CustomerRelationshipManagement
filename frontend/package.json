@@ -1,0 +1,29 @@
+{
+  "name": "customer-relationship-management-frontend",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@vaadin/button": "^24.9.5",
+    "@vaadin/dialog": "^24.9.5",
+    "@vaadin/grid": "^24.9.5",
+    "@vaadin/icon": "^24.9.5",
+    "@vaadin/icons": "^24.9.5",
+    "@vaadin/item": "^24.9.5",
+    "@vaadin/list-box": "^24.9.5",
+    "@vaadin/router": "^1.7.5",
+    "@vaadin/select": "^24.9.5",
+    "@vaadin/text-field": "^24.9.5",
+    "lit": "^2.8.0"
+  },
+  "devDependencies": {
+    "@types/node": "^18.16.16",
+    "typescript": "^5.0.4",
+    "vite": "^4.3.9"
+  }
+}
