@@ -1,5 +1,5 @@
-import { html, LitElement, TemplateResult } from 'lit';
-import { customElement, state, property } from 'lit/decorators.js';
+import { html, LitElement } from 'lit';
+import { customElement, state} from 'lit/decorators.js';
 import '@vaadin/button';
 import '@vaadin/grid';
 import '@vaadin/icon';
@@ -11,6 +11,7 @@ import '@vaadin/select';
 import '@vaadin/list-box';
 import '@vaadin/item';
 import {columnBodyRenderer} from "@vaadin/grid/lit";
+import {Router} from "@vaadin/router";
 
 declare global {
   interface HTMLElementTagNameMap {
@@ -43,39 +44,14 @@ export class NewDashboardView extends LitElement {
   @state() private searchQuery = '';
   @state() private isLoading = true;
   
-  // Grid columns
-  private columns = [
-    { path: 'name', header: 'Name' },
-    { path: 'email', header: 'Email' },
-    { path: 'phone', header: 'Phone' },
-    { 
-      path: 'status', 
-      header: 'Status',
-      renderer: (customer: Customer) => {
-        const statusClass = {
-          'active': 'bg-green-100 text-green-800',
-          'inactive': 'bg-gray-100 text-gray-800',
-          'lead': 'bg-blue-100 text-blue-800'
-        }[customer.status];
-        
-        return html`
-          <span class="px-2 py-1 rounded-full text-xs font-medium ${statusClass}">
-            ${customer.status.charAt(0).toUpperCase() + customer.status.slice(1)}
-          </span>
-        `;
-      }
-    },
-    { path: 'lastContact', header: 'Last Contact' }
-  ];
-  
   // Filtered customers based on search query
   private get filteredCustomers(): Customer[] {
     if (!this.searchQuery) return this.customers;
     const query = this.searchQuery.toLowerCase();
     return this.customers.filter(customer => 
-      customer.name.toLowerCase().includes(query) ||
-      customer.email.toLowerCase().includes(query) ||
-      customer.phone.includes(query)
+      customer.name?.toLowerCase().includes(query) ||
+      customer.email?.toLowerCase().includes(query) ||
+      customer.phone?.includes(query)
     );
   }
 
@@ -147,10 +123,7 @@ export class NewDashboardView extends LitElement {
   }
 
   render() {
-    const filteredCustomers = this.customers.filter(customer => 
-      customer.name.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
-      customer.email.toLowerCase().includes(this.searchQuery.toLowerCase())
-    );
+    const filteredCustomers = this.filteredCustomers;
 
     return html`
       <div class="dashboard-container">
@@ -535,28 +508,7 @@ export class NewDashboardView extends LitElement {
       lastContact: new Date().toISOString().split('T')[0]
     };
 
-    const saveCustomer = () => {
-      if (customer.id) {
-        // Update existing customer
-        const index = this.customers.findIndex(c => c.id === customer.id);
-        if (index !== -1) {
-          this.customers = [
-            ...this.customers.slice(0, index),
-            customer,
-            ...this.customers.slice(index + 1)
-          ];
-        }
-      } else {
-        // Add new customer
-        customer.id = Math.max(0, ...this.customers.map(c => c.id)) + 1;
-        this.customers = [...this.customers, customer];
-      }
-      
-      this.showCustomerDialog = false;
-      this.requestUpdate();
-    };
-
-    root.innerHTML = '';
+root.innerHTML = '';
     const container = document.createElement('div');
     container.style.padding = '1rem';
     container.style.minWidth = '400px';
@@ -622,7 +574,7 @@ export class NewDashboardView extends LitElement {
     const cancelButton = container.querySelector('#cancel-button') as HTMLElement;
 
     saveButton.addEventListener('click', () => {
-      const customer: Partial<Customer> = {
+      const customer: Partial<Customer> & { name: string; email: string } = {
         id: this.selectedCustomer?.id || Date.now(),
         name: nameField.value,
         email: emailField.value,
@@ -642,21 +594,38 @@ export class NewDashboardView extends LitElement {
     root.appendChild(container);
   };
 
-  private _saveCustomer(customer: Partial<Customer>) {
-    if (customer.id) {
+  private _saveCustomer(customerData: Partial<Customer> & { name: string; email: string }) {
+    if (customerData.id) {
       // Update existing customer
-      const index = this.customers.findIndex(c => c.id === customer.id);
+      const index = this.customers.findIndex(c => c.id === customerData.id);
       if (index !== -1) {
         this.customers = [
           ...this.customers.slice(0, index),
-          { ...this.customers[index], ...customer },
+          { 
+            ...this.customers[index], 
+            ...customerData,
+            // Ensure required fields are always present
+            name: customerData.name,
+            email: customerData.email,
+            // Provide defaults for optional fields if not provided
+            phone: customerData.phone || '',
+            status: customerData.status || 'lead',
+            lastContact: customerData.lastContact || new Date().toISOString().split('T')[0]
+          },
           ...this.customers.slice(index + 1)
         ];
       }
     } else {
-      // Add new customer
-      customer.id = Math.max(0, ...this.customers.map(c => c.id)) + 1;
-      this.customers = [...this.customers, customer];
+      // Add new customer - ensure all required fields are provided
+      const newCustomer: Customer = {
+        id: Math.max(0, ...this.customers.map(c => c.id)) + 1,
+        name: customerData.name,
+        email: customerData.email,
+        phone: customerData.phone || '',
+        status: customerData.status || 'lead',
+        lastContact: customerData.lastContact || new Date().toISOString().split('T')[0]
+      };
+      this.customers = [...this.customers, newCustomer];
     }
     
     this.showCustomerDialog = false;
