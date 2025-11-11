@@ -5,12 +5,9 @@
   <title>Customer Relationship Management</title>
   <link rel="icon" type="image/x-icon" href="/favicon.ico">
   
-  <!-- Web Components polyfill -->
-  <script src="https://unpkg.com/@webcomponents/webcomponentsjs@2.8.0/webcomponents-loader.js"></script>
-  
   <!-- Vite client for HMR -->
   <script type="module" src="/@vite/client"></script>
-  
+
   <!-- Main application entry point -->
   <script type="module" src="/src/main.js"></script>
   
@@ -207,34 +204,6 @@
     <div id="outlet">Loading application...</div>
   </div>
   
-  <!-- Load the webcomponents-loader.js to check whether a polyfill is required -->
-  <script>
-    if (!window.customElements) {
-      document.write('<!--');
-    }
-  </script>
-  <script src="/node_modules/@webcomponents/webcomponentsjs/webcomponents-bundle.js" async></script>
-  
-  <!-- Initialize the application -->
-  <script>
-    // Configure WebComponents
-    window.WebComponents = window.WebComponents || {
-      waitFor: function(cb) {
-        if (document.readyState === 'interactive' || document.readyState === 'complete') {
-          cb();
-        } else {
-          window.addEventListener('DOMContentLoaded', cb);
-        }
-      }
-    };
 
-    // Handle any errors during initialization
-    window.addEventListener('error', function(event) {
-      console.error('Application error:', event.error);
-    });
-  </script>
-  
-  <!-- Load the main application script -->
-  <script type="module" src="/index.js"></script>
 </body>
 </html>

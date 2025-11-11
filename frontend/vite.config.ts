@@ -20,15 +20,9 @@ export default defineConfig({
       allow: ['..'],
     },
     proxy: {
-      // Serve WebComponents polyfill
-      '^/node_modules/@webcomponents/.*': {
-        target: 'http://localhost:3000',
-        changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/node_modules\//, '/node_modules/')
-      },
       // API proxy
       '/api': {
-        target: 'http://localhost:8081',
+        target: 'http://localhost:8080',
         changeOrigin: true,
         secure: false
       }
