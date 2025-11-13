@@ -33,8 +33,7 @@ export default defineConfig({
     emptyOutDir: true,
     rollupOptions: {
       input: {
-        main: resolve(__dirname, 'index.html'),
-        app: resolve(__dirname, 'src/main.ts')
+        main: resolve(__dirname, 'index.html')
       },
       output: {
         entryFileNames: 'assets/[name]-[hash].js',
@@ -58,8 +57,7 @@ export default defineConfig({
       '@vaadin/list-box',
       '@vaadin/item',
       '@vaadin/icon',
-      '@vaadin/icons',
-      '@webcomponents/webcomponentsjs'
+      '@vaadin/icons'
     ],
     esbuildOptions: {
       target: 'es2020',

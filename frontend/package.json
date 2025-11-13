@@ -4,10 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "copy:webcomponents": "node --experimental-modules --no-warnings scripts/copy-webcomponents.js",
-    "predev": "npm run copy:webcomponents",
     "dev": "vite",
-    "prebuild": "npm run copy:webcomponents",
     "build": "tsc && vite build",
     "preview": "vite preview"
   },
