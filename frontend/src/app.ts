@@ -1,10 +1,15 @@
 import { Router } from '@vaadin/router';
 
-// Import components to register them
-import '../views/login-view';
-import '../views/register-view';
-import '../views/main-layout';
-import '../views/new-dashboard-view';
+// Simple test component
+import { html, LitElement } from 'lit';
+import { customElement } from 'lit/decorators.js';
+
+@customElement('test-view')
+export class TestView extends LitElement {
+  render() {
+    return html`<h1>Test Component Loaded!</h1><p>If you see this, components are working.</p>`;
+  }
+}
 
 // Export the initializeApp function
 export function initializeApp() {
@@ -16,68 +21,10 @@ export function initializeApp() {
     return;
   }
 
-  console.log('Found outlet element, initializing router...');
+  console.log('Found outlet element, updating content directly...');
 
-  try {
-    const router = new Router(outlet);
-    console.log('Router created successfully');
-    
-    router.setRoutes([
-      {
-        path: '/login',
-        component: 'login-view',
-        action: (_, commands) => {
-          console.log('Login route action triggered');
-          const isLoggedIn = localStorage.getItem('user') !== null;
-          console.log('User logged in:', isLoggedIn);
-          return isLoggedIn ? commands.redirect('/') : undefined;
-        }
-      },
-      {
-        path: '/register',
-        component: 'register-view',
-        action: (_, commands) => {
-          console.log('Register route action triggered');
-          const isLoggedIn = localStorage.getItem('user') !== null;
-          return isLoggedIn ? commands.redirect('/') : undefined;
-        }
-      },
-      {
-        path: '/',
-        component: 'main-layout',
-        children: [
-          {
-            path: '',
-            component: 'new-dashboard-view',
-            action: (_, commands) => {
-              console.log('Dashboard route action triggered');
-              const isLoggedIn = localStorage.getItem('user') !== null;
-              console.log('User logged in for dashboard:', isLoggedIn);
-              return !isLoggedIn ? commands.redirect('/login') : undefined;
-            }
-          },
-          {
-            path: '(.*)',
-            component: 'new-dashboard-view'
-          }
-        ]
-      }
-    ]);
+  // Update the outlet content directly
+  outlet.innerHTML = '<h1>Test Component Loaded!</h1><p>If you see this, JavaScript is working.</p>';
 
-    console.log('Routes set successfully');
-
-    // Handle initial route
-    console.log('Current pathname:', window.location.pathname);
-    if (window.location.pathname === '/') {
-      const isLoggedIn = localStorage.getItem('user') !== null;
-      console.log('Initial route check - user logged in:', isLoggedIn);
-      if (!isLoggedIn) {
-        console.log('Redirecting to /login');
-        window.history.replaceState(null, '', '/login');
-      }
-    }
-    
-  } catch (error) {
-    console.error('Failed to initialize router:', error);
-  }
+  console.log('Content updated successfully');
 }
