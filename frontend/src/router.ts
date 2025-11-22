@@ -1,4 +1,3 @@
-import { Router } from '@vaadin/router';
 import './components/user-management.js';
 
 export function initRouter() {
@@ -20,6 +19,4 @@ export function initRouter() {
       },
     },
   ]);
-
-  return router;
 }

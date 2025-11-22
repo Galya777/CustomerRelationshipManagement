@@ -1,3 +1,4 @@
+import { Router } from '@vaadin/router';
 import './components/user-management.js';
 export function initRouter() {
     const router = new Router(document.getElementById('outlet'));

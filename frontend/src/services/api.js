@@ -1,4 +1,4 @@
-const API_BASE_URL = 'http://localhost:8081/api';
+const API_BASE_URL = '/api';
 class ApiService {
     async request(endpoint, options = {}) {
         const url = `${API_BASE_URL}${endpoint}`;

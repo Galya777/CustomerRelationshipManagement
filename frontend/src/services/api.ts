@@ -5,7 +5,7 @@ export interface UserDto {
   phone?: string;
 }
 
-const API_BASE_URL = 'http://localhost:8081/api';
+const API_BASE_URL = '/api';
 
 class ApiService {
   private async request<T>(endpoint: string, options: RequestInit = {}): Promise<T> {

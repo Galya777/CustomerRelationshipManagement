@@ -9,6 +9,6 @@ export function initializeApp() {
     }
     console.log('Found outlet element, initializing router...');
     // Initialize the router
-    const router = initRouter();
+    initRouter();
     console.log('Router initialized successfully');
 }
