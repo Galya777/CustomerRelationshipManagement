@@ -47,6 +47,17 @@ public class UserService {
                 .collect(Collectors.toList());
     }
 
+    // Check if user exists by email
+    public boolean userExists(String email) {
+        return userRepository.findByEmail(email).isPresent();
+    }
+    
+    public boolean authenticate(String email, String password) {
+        return userRepository.findByEmail(email)
+            .map(user -> passwordEncoder.matches(password, user.getPassword()))
+            .orElse(false);
+    }
+
     // Get user by ID
     public Optional<UserDto> getUserById(Long id) {
         return userRepository.findById(id)
