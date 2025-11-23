@@ -1,3 +1,4 @@
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { Router } from '@vaadin/router';
 import './components/user-management.js';
 export function initRouter() {

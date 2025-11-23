@@ -1,6 +1,6 @@
 import { html, LitElement, css } from 'lit';
 import { customElement, state } from 'lit/decorators.js';
-import { apiService, UserDto } from '../services/api.js';
+import { apiService, UserDto } from '../services/api';
 
 @customElement('user-list')
 export class UserList extends LitElement {
@@ -65,14 +65,25 @@ export class UserList extends LitElement {
                 <span>ID</span>
                 <span>Name</span>
                 <span>Email</span>
+                <span>Role</span>
+                <span>Country</span>
                 <span>Phone</span>
                 <span>Actions</span>
               </div>
               ${this.users.map(user => html`
                 <div class="user-row">
                   <span>${user.id}</span>
-                  <span>${user.name}</span>
+                  <span>
+                    ${
+                      // Prefer combined name if available; otherwise join firstName + lastName from backend
+                      (user as any).name && (user as any).name.trim()
+                        ? (user as any).name
+                        : `${((user as any).firstName ?? '')} ${((user as any).lastName ?? '')}`.trim()
+                    }
+                  </span>
                   <span>${user.email}</span>
+                  <span><span class="badge">${(user as any).role ?? 'CLIENT'}</span></span>
+                  <span>${(user as any).country || '-'}</span>
                   <span>${user.phone || '-'}</span>
                   <div class="actions">
                     <button @click=${() => this.dispatchEvent(new CustomEvent('edit-user', { detail: user }))} class="edit-btn">
@@ -131,7 +142,7 @@ export class UserList extends LitElement {
 
     .user-header, .user-row {
       display: grid;
-      grid-template-columns: 60px 1fr 1fr 1fr 120px;
+      grid-template-columns: 60px 1.2fr 1.2fr 0.8fr 0.8fr 0.9fr 140px;
       gap: 1rem;
       padding: 0.75rem;
       background: white;
@@ -143,6 +154,8 @@ export class UserList extends LitElement {
       font-weight: bold;
       background: var(--light-gray);
     }
+
+    .user-row:hover { box-shadow: 0 6px 18px rgba(0,0,0,0.08); transform: translateY(-1px); transition: all .15s ease; }
 
     .actions {
       display: flex;
@@ -175,6 +188,17 @@ export class UserList extends LitElement {
 
     .delete-btn:hover {
       background-color: #c82333;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 0.2rem 0.5rem;
+      border-radius: 999px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      background: #eef2ff;
+      color: #3730a3;
+      border: 1px solid #c7d2fe;
     }
   `;
 }

@@ -53,8 +53,7 @@ let UserForm = class UserForm extends LitElement {
     updated(changedProperties) {
         if (changedProperties.has('user') && this.user) {
             this.formData = {
-                firstName: this.user.firstName || '',
-                lastName: this.user.lastName || '',
+                name: `${this.user.firstName || ''} ${this.user.lastName || ''}`.trim(),
                 email: this.user.email || '',
                 password: '', // Don't populate password for security
                 phone: this.user.phone || ''
@@ -68,8 +67,8 @@ let UserForm = class UserForm extends LitElement {
     }
     async handleSubmit(e) {
         e.preventDefault();
-        if (!this.formData.firstName.trim() || !this.formData.lastName.trim() || !this.formData.email.trim()) {
-            this.error = 'First name, last name and email are required';
+        if (!this.formData.name.trim() || !this.formData.email.trim()) {
+            this.error = 'Name and email are required';
             return;
         }
         if (!this.user?.id && !this.formData.password.trim()) {
@@ -90,7 +89,7 @@ let UserForm = class UserForm extends LitElement {
                 await apiService.createUser(this.formData);
                 this.success = 'User created successfully!';
                 // Reset form for new user
-                this.formData = { name: '', email: '', phone: '' };
+                this.formData = { name: '', email: '', password: '', phone: '' };
             }
             // Dispatch event to notify parent component
             this.dispatchEvent(new CustomEvent('user-saved'));

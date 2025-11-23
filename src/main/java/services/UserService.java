@@ -31,6 +31,9 @@ public class UserService {
     // Register new user
     public UserDto registerUser(UserDto userDto) {
         User user = UserMapper.toEntity(userDto);
+        if (user.getPassword() != null && !user.getPassword().isEmpty()) {
+            user.setPassword(passwordEncoder.encode(user.getPassword()));
+        }
         user.setRole(userDto.isLeader() ? Role.LEADER : Role.CLIENT);
         user = userRepository.save(user);
         return UserMapper.toDto(user);

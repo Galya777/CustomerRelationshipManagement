@@ -1,4 +1,4 @@
-import { initRouter } from './router.js';
+import { initRouter } from './router';
 
 // Export the initializeApp function
 export function initializeApp() {
@@ -14,6 +14,8 @@ export function initializeApp() {
   console.log('Found outlet element, initializing router...');
 
   // Initialize the router
+  // Clear any placeholder content in the outlet before initializing routes
+  outlet.innerHTML = '';
   initRouter();
 
   console.log('Router initialized successfully');

@@ -3,7 +3,7 @@ package repositories;
 import entities.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import javax.management.relation.Role;
+import entities.Role;
 import java.util.List;
 import java.util.Optional;
 
