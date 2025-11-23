@@ -100,27 +100,92 @@ export class LoginView extends LitElement {
     (this as any)[t.name] = t.value;
   }
 
+  private async getCsrfToken(): Promise<string> {
+    try {
+      const response = await fetch('/api/csrf', {
+        method: 'GET',
+        credentials: 'include' // Important for cookies
+      });
+      
+      if (!response.ok) {
+        console.warn('Failed to get CSRF token, proceeding without it');
+        return '';
+      }
+      
+      const data = await response.json();
+      return data.token || '';
+    } catch (err) {
+      console.warn('Error getting CSRF token, proceeding without it:', err);
+      return '';
+    }
+  }
+
   private async onSubmit(e: Event) {
     e.preventDefault();
     this.error = null;
 
-    // Very simple demo auth: store a Basic auth header in localStorage
     if (!this.username.trim() || !this.password.trim()) {
       this.error = 'Username and password are required';
       return;
     }
 
+    // Get CSRF token first
+    const csrfToken = await this.getCsrfToken();
+    
+    // Create the Basic Auth token
+    const token = btoa(`${this.username}:${this.password}`);
+    
     try {
-      const basic = btoa(`${this.username}:${this.password}`);
-      localStorage.setItem('isAuthenticated', 'true');
-      localStorage.setItem('authHeader', `Basic ${basic}`);
+      // Prepare headers with CSRF token if available
+      const headers: Record<string, string> = {
+        'Content-Type': 'application/json',
+        'Authorization': `Basic ${token}`
+      };
+      
+      if (csrfToken) {
+        headers['X-CSRF-TOKEN'] = csrfToken;
+      }
 
-      // Navigate to users
-      window.history.pushState({}, '', '/users');
+      // First try to authenticate with Basic Auth
+      const testResponse = await fetch('/api/users/me', { headers });
+
+      if (testResponse.ok) {
+        // If Basic Auth works, store the token and proceed
+        localStorage.setItem('isAuthenticated', 'true');
+        localStorage.setItem('username', this.username);
+        localStorage.setItem('authHeader', `Basic ${token}`);
+        window.location.href = '/users';
+        return;
+      }
+
+      // If Basic Auth fails, try the login endpoint
+      const response = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers,
+        credentials: 'include', // Important for cookies
+        body: JSON.stringify({
+          email: this.username,
+          password: this.password
+        })
+      });
+
+      // Handle non-JSON responses
+      const contentType = response.headers.get('content-type');
+      let data;
+      
+      if (contentType && contentType.includes('application/json')) {
+        data = await response.json();
+      } else {
+        const text = await response.text();
+        throw new Error(text || 'Login failed');
+      }
+      
+      // Redirect to dashboard
+      window.history.pushState({}, '', '/dashboard');
       window.dispatchEvent(new PopStateEvent('popstate'));
     } catch (err) {
-      this.error = 'Failed to login';
-      console.error(err);
+      this.error = 'Invalid email or password';
+      console.error('Login error:', err);
     }
   }
 

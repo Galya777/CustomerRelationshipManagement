@@ -2,6 +2,7 @@ import { Router } from '@vaadin/router';
 import './components/user-management';
 import './views/login-view';
 import './views/register-view';
+import './views/landing-view';
 
 export function initRouter() {
   const router = new Router(document.getElementById('outlet'));
@@ -14,7 +15,13 @@ export function initRouter() {
   };
 
   router.setRoutes([
-    { path: '/', redirect: '/login' },
+    {
+      path: '/',
+      component: 'landing-view',
+      action: async () => {
+        await import('./views/landing-view');
+      },
+    },
     {
       path: '/login',
       component: 'login-view',
