@@ -57,6 +57,20 @@ public class DataInitializer {
                 leader.setBirthDate(LocalDate.of(1985, 10, 20));
                 userRepository.save(leader);
             }
+
+            // Test user for README documentation
+            if (userRepository.findByEmail("test1").isEmpty()) {
+                User testUser = new User();
+                testUser.setEmail("test1");
+                testUser.setFirstName("Test");
+                testUser.setLastName("User");
+                testUser.setRole(Role.CLIENT);
+                testUser.setLeader(false);
+                testUser.setPassword(passwordEncoder.encode("12345678"));
+                testUser.setCountry("Test Country");
+                testUser.setBirthDate(LocalDate.of(1995, 1, 1));
+                userRepository.save(testUser);
+            }
         };
     }
 }
