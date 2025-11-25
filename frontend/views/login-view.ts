@@ -141,13 +141,6 @@ export class LoginView extends LitElement {
         this.requestUpdate(); // ensure render after state changes (usually not required, but safe)
 
         try {
-            // Test account credentials
-            const TEST_USERNAME = 'test1';
-            const TEST_PASSWORD = '12345678';
-
-            // Simulate API call with a small delay
-            await new Promise(resolve => setTimeout(resolve, 500));
-
             // Validate credentials
             if (!this.username || !this.password) {
                 this.error = 'Please enter both username and password';
@@ -156,21 +149,37 @@ export class LoginView extends LitElement {
                 return;
             }
 
-            if (this.username === TEST_USERNAME && this.password === TEST_PASSWORD) {
+            // Call backend authentication API
+            const response = await fetch('/api/auth/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    username: this.username,
+                    password: this.password
+                })
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+
                 // Create user object
                 const user: User = {
                     username: this.username,
-                    name: 'Test User',
-                    role: 'admin'
+                    name: 'Test User', // TODO: Get actual user name from backend
+                    role: 'client' // TODO: Get actual role from backend
                 };
 
                 // Store user in localStorage
                 localStorage.setItem('user', JSON.stringify(user));
+                localStorage.setItem('isAuthenticated', 'true');
 
                 // Navigate to dashboard
                 window.location.href = '/';
             } else {
-                this.error = 'Invalid username or password';
+                const errorData = await response.json();
+                this.error = errorData.error || 'Invalid username or password';
                 this.loading = false;
                 this.requestUpdate();
             }
