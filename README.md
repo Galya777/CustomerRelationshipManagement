@@ -62,7 +62,7 @@ A modern web-based CRM system built with Vaadin and TypeScript.
 For testing purposes, you can use the following credentials:
 
 - **Username**: test1
-- **Password**: 12345678
+- **Password**: 123456789
 
 ## Project Structure
 

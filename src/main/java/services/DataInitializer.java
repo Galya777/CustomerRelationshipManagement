@@ -59,18 +59,29 @@ public class DataInitializer {
             }
 
             // Test user for README documentation
-            if (userRepository.findByEmail("test1").isEmpty()) {
+            userRepository.findByEmail("test1").ifPresentOrElse(existing -> {
+                // Ensure password matches README (upgrade if needed)
+                existing.setPassword(passwordEncoder.encode("123456789"));
+                if (existing.getFirstName() == null) existing.setFirstName("Test");
+                if (existing.getLastName() == null) existing.setLastName("User");
+                if (existing.getRole() == null) existing.setRole(Role.CLIENT);
+                existing.setLeader(existing.isLeader());
+                if (existing.getCountry() == null) existing.setCountry("Test Country");
+                if (existing.getBirthDate() == null) existing.setBirthDate(LocalDate.of(1995, 1, 1));
+                userRepository.save(existing);
+            }, () -> {
                 User testUser = new User();
                 testUser.setEmail("test1");
                 testUser.setFirstName("Test");
                 testUser.setLastName("User");
                 testUser.setRole(Role.CLIENT);
                 testUser.setLeader(false);
-                testUser.setPassword(passwordEncoder.encode("12345678"));
+                // Align with README credentials: username: test1, password: 123456789
+                testUser.setPassword(passwordEncoder.encode("123456789"));
                 testUser.setCountry("Test Country");
                 testUser.setBirthDate(LocalDate.of(1995, 1, 1));
                 userRepository.save(testUser);
-            }
+            });
         };
     }
 }

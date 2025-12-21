@@ -17,6 +17,9 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.web.authentication.HttpStatusEntryPoint;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import repositories.UserRepository;
 
 import java.util.Arrays;
 
@@ -26,22 +29,42 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        // Disable CSRF and CORS for development
+        // Disable CSRF (stateless API) and enable CORS
         http.csrf(csrf -> csrf.disable());
         http.cors(cors -> cors.configurationSource(corsConfigurationSource()));
 
-        // Allow all requests for now - we'll secure them later
-        http.authorizeHttpRequests(auth -> auth.anyRequest().permitAll());
+        // Authorize requests: open registration/auth/public, protect API by default
+        http.authorizeHttpRequests(auth -> auth
+                // CORS preflight
+                .requestMatchers(new AntPathRequestMatcher("/**", HttpMethod.OPTIONS.name())).permitAll()
+                // Public API endpoints
+                .requestMatchers(new AntPathRequestMatcher("/api/auth/**")).permitAll()
+                .requestMatchers(new AntPathRequestMatcher("/api/users/register", HttpMethod.POST.name())).permitAll()
+                .requestMatchers(new AntPathRequestMatcher("/api/test/public")).permitAll()
+                // Static/frontend resources
+                .requestMatchers(
+                        new AntPathRequestMatcher("/"),
+                        new AntPathRequestMatcher("/index.html"),
+                        new AntPathRequestMatcher("/static/**"),
+                        new AntPathRequestMatcher("/assets/**"),
+                        new AntPathRequestMatcher("/frontend/**"),
+                        new AntPathRequestMatcher("/VAADIN/**")
+                ).permitAll()
+                // Everything else under /api/** requires authentication
+                .requestMatchers(new AntPathRequestMatcher("/api/**")).authenticated()
+                // Any non-api requests are permitted (serving frontend/dev tools)
+                .anyRequest().permitAll());
 
-        // Disable form login and basic authentication
+        // Enable HTTP Basic auth for simple credentials verification
+        http.httpBasic(customizer -> {});
         http.formLogin(form -> form.disable());
-        http.httpBasic(basic -> basic.disable());
 
-        // Set session management to stateless
-        http.sessionManagement(session -> 
-            session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-        );
-        
+        // Return 401 for unauthorized API access instead of redirecting
+        http.exceptionHandling(ex -> ex.authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)));
+
+        // Stateless session management
+        http.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+
         // Configure frame options for H2 console
         http.headers(headers -> headers.frameOptions(frameOptions -> frameOptions.disable()));
 
@@ -59,12 +82,29 @@ public class SecurityConfig {
     }
 
     @Bean
+    public UserDetailsService userDetailsService(UserRepository userRepository) {
+        return username -> userRepository.findByEmail(username)
+                .map(u -> org.springframework.security.core.userdetails.User
+                        .withUsername(u.getEmail())
+                        .password(u.getPassword())
+                        .roles(u.getRole().name())
+                        .build())
+                .orElseThrow(() -> new UsernameNotFoundException("User not found: " + username));
+    }
+
+    @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Arrays.asList("*"));
+        // Explicitly allow common dev front-end origins
+        configuration.setAllowedOrigins(Arrays.asList(
+                "http://localhost:3000",
+                "http://127.0.0.1:3000",
+                "http://localhost:5173",
+                "http://127.0.0.1:5173"
+        ));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(Arrays.asList("*"));
-        configuration.setAllowCredentials(false);
+        configuration.setAllowCredentials(true);
         configuration.setMaxAge(3600L);
         
         // Add exposed headers if needed
