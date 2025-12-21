@@ -1,9 +1,11 @@
 package dto;
 
 import jakarta.validation.constraints.NotBlank;
+import com.fasterxml.jackson.annotation.JsonAlias;
 
 public class LoginRequest {
     @NotBlank
+    @JsonAlias({"email", "username"})
     private String username;
 
     @NotBlank

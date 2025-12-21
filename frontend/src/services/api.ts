@@ -51,7 +51,8 @@ class ApiService {
       let errorMessage = `API request failed: ${response.status} ${response.statusText}`;
       try {
         const errorData = await response.json();
-        errorMessage = errorData.message || errorMessage;
+        // Prefer backend-provided error shape
+        errorMessage = errorData.error || errorData.message || errorMessage;
       } catch (e) {
         // Ignore JSON parse error
       }
@@ -69,12 +70,15 @@ class ApiService {
   private async request<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
     const url = `${API_BASE_URL}${endpoint}`;
     const authHeader = this.getAuthHeader();
+    // Never send Authorization header when registering a new user to avoid
+    // any auth filter interference on the public endpoint
+    const skipAuthForThisCall = endpoint === '/users/register';
     
     const headers = new Headers();
     headers.append('Content-Type', 'application/json');
     
-    // Add auth header if it exists
-    if (authHeader.Authorization) {
+    // Add auth header if it exists and not explicitly skipped
+    if (!skipAuthForThisCall && authHeader.Authorization) {
       headers.append('Authorization', authHeader.Authorization);
     }
     

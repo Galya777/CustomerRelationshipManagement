@@ -101,23 +101,8 @@ export class LoginView extends LitElement {
   }
 
   private async getCsrfToken(): Promise<string> {
-    try {
-      const response = await fetch('/api/csrf', {
-        method: 'GET',
-        credentials: 'include' // Important for cookies
-      });
-      
-      if (!response.ok) {
-        console.warn('Failed to get CSRF token, proceeding without it');
-        return '';
-      }
-      
-      const data = await response.json();
-      return data.token || '';
-    } catch (err) {
-      console.warn('Error getting CSRF token, proceeding without it:', err);
-      return '';
-    }
+    // CSRF is disabled on the backend for stateless Basic Auth. No token needed.
+    return '';
   }
 
   private async onSubmit(e: Event) {
@@ -129,62 +114,14 @@ export class LoginView extends LitElement {
       return;
     }
 
-    // Get CSRF token first
-    const csrfToken = await this.getCsrfToken();
-    
-    // Create the Basic Auth token
-    const token = btoa(`${this.username}:${this.password}`);
-    
     try {
-      // Prepare headers with CSRF token if available
-      const headers: Record<string, string> = {
-        'Content-Type': 'application/json',
-        'Authorization': `Basic ${token}`
-      };
-      
-      if (csrfToken) {
-        headers['X-CSRF-TOKEN'] = csrfToken;
-      }
-
-      // First try to authenticate with Basic Auth
-      const testResponse = await fetch('/api/users/me', { headers });
-
-      if (testResponse.ok) {
-        // If Basic Auth works, store the token and proceed
-        localStorage.setItem('isAuthenticated', 'true');
-        localStorage.setItem('username', this.username);
-        localStorage.setItem('authHeader', `Basic ${token}`);
-        window.location.href = '/users';
-        return;
-      }
-
-      // If Basic Auth fails, try the login endpoint
-      const response = await fetch('/api/auth/login', {
-        method: 'POST',
-        headers,
-        credentials: 'include', // Important for cookies
-        body: JSON.stringify({
-          email: this.username,
-          password: this.password
-        })
-      });
-
-      // Handle non-JSON responses
-      const contentType = response.headers.get('content-type');
-      let data;
-      
-      if (contentType && contentType.includes('application/json')) {
-        data = await response.json();
-      } else {
-        const text = await response.text();
-        throw new Error(text || 'Login failed');
-      }
-      
-      // Redirect to dashboard
-      window.history.pushState({}, '', '/dashboard');
-      window.dispatchEvent(new PopStateEvent('popstate'));
+      // Use Basic Auth verification via API service
+      const { apiService } = await import('../services/api');
+      await apiService.login({ username: this.username, password: this.password });
+      // On success, go to users page
+      window.location.href = '/users';
     } catch (err) {
-      this.error = 'Invalid email or password';
+      this.error = 'Invalid username or password';
       console.error('Login error:', err);
     }
   }
