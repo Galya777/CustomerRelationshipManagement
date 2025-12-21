@@ -1,24 +1,6 @@
 package services;
 
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.web.servlet.config.annotation.CorsRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
-
-@Configuration
-public class CorsConfig {
-
-    @Bean
-    public WebMvcConfigurer corsConfigurer() {
-        return new WebMvcConfigurer() {
-            @Override
-            public void addCorsMappings(CorsRegistry registry) {
-                registry.addMapping("/api/**")
-                        .allowedOrigins("http://localhost:5173", "http://localhost:3000")
-                        .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
-                        .allowedHeaders("*")
-                        .allowCredentials(true);
-            }
-        };
-    }
-}
+// Deprecated: CORS is now configured centrally in SecurityConfig.corsConfigurationSource().
+// This file intentionally left as a no-op to avoid dual CORS configurations that can
+// cause conflicting headers and 403 on preflight. If needed in the future, re‑enable
+// WebMvcConfigurer here, but prefer SecurityConfig for API CORS.

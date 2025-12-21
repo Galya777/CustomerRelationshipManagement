@@ -39,7 +39,8 @@ public class SecurityConfig {
                 .requestMatchers(new AntPathRequestMatcher("/**", HttpMethod.OPTIONS.name())).permitAll()
                 // Public API endpoints
                 .requestMatchers(new AntPathRequestMatcher("/api/auth/**")).permitAll()
-                .requestMatchers(new AntPathRequestMatcher("/api/users/register", HttpMethod.POST.name())).permitAll()
+                // Permit registration endpoint (any method to be safe)
+                .requestMatchers(new AntPathRequestMatcher("/api/users/register")).permitAll()
                 .requestMatchers(new AntPathRequestMatcher("/api/test/public")).permitAll()
                 // Static/frontend resources
                 .requestMatchers(
@@ -95,13 +96,8 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        // Explicitly allow common dev front-end origins
-        configuration.setAllowedOrigins(Arrays.asList(
-                "http://localhost:3000",
-                "http://127.0.0.1:3000",
-                "http://localhost:5173",
-                "http://127.0.0.1:5173"
-        ));
+        // Allow any dev origin; Spring will echo the Origin when using patterns (works with credentials)
+        configuration.setAllowedOriginPatterns(Arrays.asList("*"));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(Arrays.asList("*"));
         configuration.setAllowCredentials(true);
