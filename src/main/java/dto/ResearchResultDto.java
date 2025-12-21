@@ -8,7 +8,7 @@ import java.util.List;
 public class ResearchResultDto {
     private Long id;
     private Long userId;
-    private Long reseachId;
+    private Long researchId;
     private LocalDateTime submittedAt;
     private List<UserAnswerDto> userAnswers;
 
@@ -20,8 +20,8 @@ public class ResearchResultDto {
     public Long getUserId() { return userId; }
     public void setUserId(Long userId) { this.userId = userId; }
 
-    public Long getReseachId() { return reseachId; }
-    public void setReseachId(Long reseachId) { this.reseachId = reseachId; }
+    public Long getResearchId() { return researchId; }
+    public void setResearchId(Long researchId) { this.researchId = researchId; }
 
     public LocalDateTime getSubmittedAt() { return submittedAt; }
     public void setSubmittedAt(LocalDateTime submittedAt) { this.submittedAt = submittedAt; }

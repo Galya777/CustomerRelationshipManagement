@@ -2,28 +2,25 @@ import { defineConfig } from 'vite';
 import { resolve } from 'path';
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
-import typescript from '@rollup/plugin-typescript';
+import typescript from "@rollup/plugin-typescript";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 export default defineConfig({
-  logLevel: 'warn',
   root: '.',
   publicDir: 'public',
   server: {
     port: 3000,
     strictPort: true,
     open: true,
+    cors: true,
     fs: {
-      // Allow serving files from one level up from the package root
-      allow: ['..'],
+      strict: false,
+      allow: ['..']
     },
     proxy: {
-      // API proxy
       '/api': {
-        // Default to backend on 9194 to avoid conflicts with local Jenkins on 8080.
-        // You can override with: VITE_API_TARGET=http://localhost:8080 npm run dev
         target: process.env.VITE_API_TARGET || 'http://localhost:9194',
         changeOrigin: true,
         secure: false
@@ -33,6 +30,7 @@ export default defineConfig({
   build: {
     outDir: 'dist',
     emptyOutDir: true,
+    sourcemap: true,
     rollupOptions: {
       input: {
         main: resolve(__dirname, 'index.html')
@@ -42,25 +40,25 @@ export default defineConfig({
         chunkFileNames: 'assets/[name]-[hash].js',
         assetFileNames: 'assets/[name]-[hash][extname]',
         manualChunks: {
-          vendor: ['@vaadin/router', 'lit']
+          vendor: [
+            '@vaadin/router',
+            'lit',
+            '@vaadin/button',
+            '@vaadin/text-field',
+            '@vaadin/email-field',
+            '@vaadin/dialog',
+            '@vaadin/select',
+            '@vaadin/list-box',
+            '@vaadin/item',
+            '@vaadin/grid',
+            '@vaadin/icon',
+            '@vaadin/icons'
+          ]
         }
       }
     }
   },
   optimizeDeps: {
-    include: [
-      '@vaadin/router',
-      'lit',
-      '@vaadin/button',
-      '@vaadin/text-field',
-      '@vaadin/email-field',
-      '@vaadin/dialog',
-      '@vaadin/select',
-      '@vaadin/list-box',
-      '@vaadin/item',
-      '@vaadin/icon',
-      '@vaadin/icons'
-    ],
     esbuildOptions: {
       target: 'es2020',
       supported: {
