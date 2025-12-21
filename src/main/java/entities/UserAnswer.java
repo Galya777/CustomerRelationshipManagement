@@ -14,7 +14,7 @@ public class UserAnswer {
     private String answerText;
 
     @ManyToOne
-    private ResearchResult reseachResult;
+    private ResearchResult researchResult;
 
     @ManyToOne
     private Question question;

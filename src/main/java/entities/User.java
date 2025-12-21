@@ -32,10 +32,10 @@ public class User {
     private List<Group> groups;
 
     @OneToMany(mappedBy = "createdBy")
-    private List<Research> createdReseach;
+    private List<Research> createdResearch;
 
     @OneToMany(mappedBy = "user")
-    private List<ResearchResult> reseachResults;
+    private List<ResearchResult> researchResults;
 
     // --- Getters and Setters ---
     public Long getId() { return id; }
@@ -68,11 +68,11 @@ public class User {
     public List<Group> getGroups() { return groups; }
     public void setGroups(List<Group> groups) { this.groups = groups; }
 
-    public List<Research> getCreatedReseach() { return createdReseach; }
-    public void setCreatedReseach(List<Research> createdReseach) { this.createdReseach = createdReseach; }
+    public List<Research> getCreatedResearch() { return createdResearch; }
+    public void setCreatedResearch(List<Research> createdResearch) { this.createdResearch = createdResearch; }
 
-    public List<ResearchResult> getReseachResults() { return reseachResults; }
-    public void setReseachResults(List<ResearchResult> reseachResults) { this.reseachResults = reseachResults; }
+    public List<ResearchResult> getResearchResults() { return researchResults; }
+    public void setResearchResults(List<ResearchResult> researchResults) { this.researchResults = researchResults; }
 }
 
 

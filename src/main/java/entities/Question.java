@@ -20,6 +20,6 @@ public class Question {
     private List<Answer> answers;
 
     @ManyToOne
-    private Research reseach;
+    private Research research;
 }
 

@@ -15,10 +15,10 @@ public class ResearchResult {
     private User user;
 
     @ManyToOne
-    private Research reseach;
+    private Research research;
 
     private LocalDateTime submittedAt;
 
-    @OneToMany(mappedBy = "reseachResult", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "researchResult", cascade = CascadeType.ALL)
     private List<UserAnswer> userAnswers;
 }
