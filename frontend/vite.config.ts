@@ -22,7 +22,9 @@ export default defineConfig({
     proxy: {
       // API proxy
       '/api': {
-        target: 'http://localhost:8080',
+        // Default to backend on 9194 to avoid conflicts with local Jenkins on 8080.
+        // You can override with: VITE_API_TARGET=http://localhost:8080 npm run dev
+        target: process.env.VITE_API_TARGET || 'http://localhost:9194',
         changeOrigin: true,
         secure: false
       }
