@@ -16,6 +16,7 @@ public class DataInitializer {
     @Bean
     CommandLineRunner initDefaultUsers(UserRepository userRepository, PasswordEncoder passwordEncoder) {
         return args -> {
+            System.out.println("Initializing default users...");
             // Admin user
             if (userRepository.findByEmail("admin@example.com").isEmpty()) {
                 User admin = new User();
@@ -28,6 +29,7 @@ public class DataInitializer {
                 admin.setCountry("USA");
                 admin.setBirthDate(LocalDate.of(1980, 1, 1));
                 userRepository.save(admin);
+                System.out.println("Admin user created");
             }
 
             // Test client user
@@ -42,6 +44,7 @@ public class DataInitializer {
                 client.setCountry("Canada");
                 client.setBirthDate(LocalDate.of(1990, 5, 15));
                 userRepository.save(client);
+                System.out.println("Client user created");
             }
 
             // Test leader user
@@ -56,6 +59,7 @@ public class DataInitializer {
                 leader.setCountry("UK");
                 leader.setBirthDate(LocalDate.of(1985, 10, 20));
                 userRepository.save(leader);
+                System.out.println("Leader user created");
             }
 
             // Test user for README documentation
@@ -69,6 +73,7 @@ public class DataInitializer {
                 if (existing.getCountry() == null) existing.setCountry("Test Country");
                 if (existing.getBirthDate() == null) existing.setBirthDate(LocalDate.of(1995, 1, 1));
                 userRepository.save(existing);
+                System.out.println("Test user updated");
             }, () -> {
                 User testUser = new User();
                 testUser.setEmail("test1");
@@ -81,7 +86,9 @@ public class DataInitializer {
                 testUser.setCountry("Test Country");
                 testUser.setBirthDate(LocalDate.of(1995, 1, 1));
                 userRepository.save(testUser);
+                System.out.println("Test user created");
             });
+            System.out.println("User initialization complete");
         };
     }
 }

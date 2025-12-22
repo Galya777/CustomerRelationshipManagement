@@ -32,18 +32,22 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<?> authenticateUser(@RequestBody LoginRequest loginRequest) {
+        System.out.println("Login attempt for username: " + loginRequest.getUsername());
         try {
             // For now, just check if the user exists and password matches
             if (userService.authenticate(loginRequest.getUsername(), loginRequest.getPassword())) {
                 Map<String, String> response = new HashMap<>();
                 response.put("message", "Login successful");
+                System.out.println("Login successful for: " + loginRequest.getUsername());
                 return ResponseEntity.ok(response);
             } else {
                 Map<String, String> errorResponse = new HashMap<>();
                 errorResponse.put("error", "Invalid username or password");
+                System.out.println("Login failed for: " + loginRequest.getUsername());
                 return ResponseEntity.badRequest().body(errorResponse);
             }
         } catch (Exception e) {
+            System.out.println("Login exception for: " + loginRequest.getUsername() + " - " + e.getMessage());
             Map<String, String> errorResponse = new HashMap<>();
             errorResponse.put("error", "Login failed: " + e.getMessage());
             return ResponseEntity.badRequest().body(errorResponse);

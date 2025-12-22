@@ -45,7 +45,7 @@ A modern web-based CRM system built with Vaadin and TypeScript.
    ```bash
    mvn spring-boot:run
    ```
-   The backend will be available at `http://localhost:8080`
+   The backend will be available at `http://localhost:9194`
 
 ### Production Build
 

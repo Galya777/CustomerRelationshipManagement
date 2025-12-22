@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title th:text="${title}">Login</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+    <h1>Login</h1>
+    <form id="loginForm">
+        <label>Username: <input type="text" id="username"></label><br>
+        <label>Password: <input type="password" id="password"></label><br>
+        <button type="submit">Login</button>
+    </form>
+    <script>
+        $('#loginForm').submit(function(e) {
+            e.preventDefault();
+            $.post('/api/login', {
+                username: $('#username').val(),
+                password: $('#password').val()
+            }, function(data) {
+                alert('Login successful');
+                window.location.href = '/dashboard';
+            }).fail(function() {
+                alert('Login failed');
+            });
+        });
+    </script>
+</body>
+</html>

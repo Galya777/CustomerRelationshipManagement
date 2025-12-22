@@ -60,9 +60,18 @@ public class UserService {
     }
     
     public boolean authenticate(String email, String password) {
-        return userRepository.findByEmail(email)
-            .map(user -> passwordEncoder.matches(password, user.getPassword()))
-            .orElse(false);
+        System.out.println("Authenticating user: " + email);
+        Optional<User> userOpt = userRepository.findByEmail(email);
+        if (userOpt.isPresent()) {
+            User user = userOpt.get();
+            System.out.println("User found: " + user.getEmail() + ", encoded password: " + user.getPassword());
+            boolean matches = passwordEncoder.matches(password, user.getPassword());
+            System.out.println("Password matches: " + matches);
+            return matches;
+        } else {
+            System.out.println("User not found: " + email);
+            return false;
+        }
     }
 
     // Get user by ID

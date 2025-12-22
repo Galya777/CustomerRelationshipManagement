@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title th:text="${title}">Register</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+    <h1>Register</h1>
+    <form id="registerForm">
+        <label>Email: <input type="email" id="email"></label><br>
+        <label>First Name: <input type="text" id="firstName"></label><br>
+        <label>Last Name: <input type="text" id="lastName"></label><br>
+        <label>Password: <input type="password" id="password"></label><br>
+        <label>Leader: <input type="checkbox" id="isLeader"></label><br>
+        <button type="submit">Register</button>
+    </form>
+    <script>
+        $('#registerForm').submit(function(e) {
+            e.preventDefault();
+            $.post('/api/users/register', {
+                email: $('#email').val(),
+                firstName: $('#firstName').val(),
+                lastName: $('#lastName').val(),
+                password: $('#password').val(),
+                isLeader: $('#isLeader').is(':checked')
+            }, function(data) {
+                alert('Registration successful');
+                window.location.href = '/login';
+            }).fail(function(xhr) {
+                alert('Registration failed: ' + xhr.responseJSON.error);
+            });
+        });
+    </script>
+</body>
+</html>

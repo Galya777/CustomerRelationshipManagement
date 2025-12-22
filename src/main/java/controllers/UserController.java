@@ -48,14 +48,20 @@ public class UserController {
     // Get current user information
     @GetMapping("/me")
     public ResponseEntity<?> getCurrentUser() {
+        System.out.println("getCurrentUser called");
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication == null || !authentication.isAuthenticated()) {
+            System.out.println("No authentication");
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
-        
+
         String username = authentication.getName();
+        System.out.println("Authenticated user: " + username);
         return userService.getUserByEmail(username)
-                .map(ResponseEntity::ok)
+                .map(user -> {
+                    System.out.println("User found: " + user.getEmail());
+                    return ResponseEntity.ok(user);
+                })
                 .orElse(ResponseEntity.notFound().build());
     }
 

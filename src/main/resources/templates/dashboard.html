@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title th:text="${title}">Dashboard</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+    <h1>Dashboard</h1>
+    <div id="users"></div>
+    <script>
+        $(document).ready(function() {
+            $.get('/api/users', function(data) {
+                $('#users').html('<h2>Users</h2><ul>' + data.map(u => '<li>' + u.email + '</li>').join('') + '</ul>');
+            });
+        });
+    </script>
+</body>
+</html>

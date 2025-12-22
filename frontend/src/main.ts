@@ -2,6 +2,7 @@ import { Router } from '@vaadin/router';
 import './views/login-view';
 import './views/register-view';
 import './views/landing-view';
+import './components/user-management';
 
 declare global {
   interface Window {
@@ -53,8 +54,8 @@ async function initializeApp() {
         // Use the router's action arguments so we can return a commands.redirect to avoid hard reloads
         action: (_context: any, commands: any) => {
           // Check if already logged in
-          if (localStorage.getItem('user')) {
-            return commands.redirect('/');
+          if (localStorage.getItem('isAuthenticated') === 'true') {
+            return commands.redirect('/users');
           }
           return import('./views/login-view');
         }
@@ -64,10 +65,21 @@ async function initializeApp() {
         component: 'register-view',
         action: (_context: any, commands: any) => {
           // Check if already logged in
-          if (localStorage.getItem('user')) {
-            return commands.redirect('/');
+          if (localStorage.getItem('isAuthenticated') === 'true') {
+            return commands.redirect('/users');
           }
           return import('./views/register-view');
+        }
+      },
+      {
+        path: '/users',
+        component: 'user-management',
+        action: (_context: any, commands: any) => {
+          // Check if not logged in
+          if (localStorage.getItem('isAuthenticated') !== 'true') {
+            return commands.redirect('/login');
+          }
+          return import('./components/user-management');
         }
       },
       // Add a catch-all route for 404
@@ -81,17 +93,17 @@ async function initializeApp() {
     ]);
 
     // Check authentication status on page load
-    const isLoggedIn = localStorage.getItem('user') !== null;
+    const isLoggedIn = localStorage.getItem('isAuthenticated') === 'true';
     const currentPath = window.location.pathname;
-    
+
     // Redirect to login if not authenticated and not on a public page
     if (!isLoggedIn && !['/login', '/register', '/'].includes(currentPath)) {
       // Use client-side navigation to avoid full reload
       Router.go('/login');
     }
-    // Redirect to home if already logged in and trying to access auth pages
+    // Redirect to users if already logged in and trying to access auth pages
     else if (isLoggedIn && ['/login', '/register'].includes(currentPath)) {
-      Router.go('/');
+      Router.go('/users');
     }
 
     // Remove loading indicator
@@ -100,24 +112,6 @@ async function initializeApp() {
       loading.remove();
     }
 
-    // Add popstate listener for manual navigation
-    window.addEventListener('popstate', () => {
-      const path = window.location.pathname;
-      const outlet = document.getElementById('outlet');
-      if (outlet) {
-        outlet.innerHTML = '';
-        if (path === '/') {
-          const element = document.createElement('landing-view');
-          outlet.appendChild(element);
-        } else if (path === '/login') {
-          const element = document.createElement('login-view');
-          outlet.appendChild(element);
-        } else if (path === '/register') {
-          const element = document.createElement('register-view');
-          outlet.appendChild(element);
-        }
-      }
-    });
 
   } catch (error) {
     console.error('Failed to initialize the app:', error);

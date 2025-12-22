@@ -52,8 +52,8 @@ public class ApiAliasController {
 
     // SSE endpoint for active researches progress as per assignment spec
     // Emits a heartbeat with a simple statistics payload
-    @GetMapping(path = "/active-Reseachs", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-    public Flux<ServerSentEvent<Map<String, Object>>> activeReseachs() {
+    @GetMapping(path = "/active-Researches", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    public Flux<ServerSentEvent<Map<String, Object>>> activeResearches() {
         return Flux.interval(Duration.ofSeconds(2))
                 .map(seq -> {
                     Map<String, Object> payload = new HashMap<>();

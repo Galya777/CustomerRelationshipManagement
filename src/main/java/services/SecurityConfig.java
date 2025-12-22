@@ -84,13 +84,19 @@ public class SecurityConfig {
 
     @Bean
     public UserDetailsService userDetailsService(UserRepository userRepository) {
-        return username -> userRepository.findByEmail(username)
-                .map(u -> org.springframework.security.core.userdetails.User
-                        .withUsername(u.getEmail())
-                        .password(u.getPassword())
-                        .roles(u.getRole().name())
-                        .build())
-                .orElseThrow(() -> new UsernameNotFoundException("User not found: " + username));
+        return username -> {
+            System.out.println("Loading user: " + username);
+            return userRepository.findByEmail(username)
+                    .map(u -> {
+                        System.out.println("User loaded: " + u.getEmail() + ", password: " + u.getPassword());
+                        return org.springframework.security.core.userdetails.User
+                                .withUsername(u.getEmail())
+                                .password(u.getPassword())
+                                .roles(u.getRole().name())
+                                .build();
+                    })
+                    .orElseThrow(() -> new UsernameNotFoundException("User not found: " + username));
+        };
     }
 
     @Bean

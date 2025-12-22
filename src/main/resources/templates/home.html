@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title th:text="${title}">CRM</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+    <h1>Welcome to Customer Relationship Management</h1>
+    <nav>
+        <a href="/">Home</a>
+        <a href="/help">Help</a>
+        <a href="/about">About</a>
+        <a href="/login">Login</a>
+        <a href="/register">Register</a>
+        <a href="/dashboard">Dashboard</a>
+    </nav>
+    <div id="content">
+        <p>This is the home page.</p>
+    </div>
+    <script>
+        // jQuery for async updates
+        $(document).ready(function() {
+            // Example async load
+            $.get('/api/users', function(data) {
+                console.log('Users:', data);
+            });
+        });
+    </script>
+</body>
+</html>

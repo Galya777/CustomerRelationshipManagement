@@ -1,6 +1,7 @@
 import { LitElement, html, css } from 'lit';
 import { customElement, state } from 'lit/decorators.js';
-import { apiService } from '../services/api';
+import { Router } from '@vaadin/router';
+import { apiService } from '@/services/api';
 
 @customElement('login-view')
 export class LoginView extends LitElement {
@@ -119,8 +120,8 @@ export class LoginView extends LitElement {
     try {
       // Use Basic Auth verification via API service
       await apiService.login({ username: this.username, password: this.password });
-      // On success, go to users page using global router when available
-      this.navigateTo('/users');
+      // On success, go to dashboard page using global router when available
+      this.navigateTo('/dashboard');
     } catch (err) {
       this.error = 'Invalid username or password';
       console.error('Login error:', err);
@@ -129,25 +130,12 @@ export class LoginView extends LitElement {
 
   private navigateTo(path: string) {
     console.debug('[login-view] navigateTo ->', path, 'current=', window.location.pathname);
-    // Manual rendering for known paths
+    // Use Vaadin Router instance
     const outlet = document.getElementById('outlet');
-    if (outlet) {
-      if (path === '/register') {
-        outlet.innerHTML = '';
-        const element = document.createElement('register-view');
-        outlet.appendChild(element);
-        history.pushState({}, '', path);
-        console.debug('[login-view] manually rendered register');
-        return;
-      }
-    }
-    // Fallback
-    try {
-      history.pushState({}, '', path);
-      window.dispatchEvent(new PopStateEvent('popstate'));
-    } catch (err) {
-      console.warn('[login-view] navigateTo fallback failed', err);
-      window.location.href = path;
+    if (outlet && (window as any).router) {
+      (window as any).router.render(path, outlet);
+    } else {
+      Router.go(path);
     }
   }
 
