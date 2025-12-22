@@ -1,10 +1,13 @@
 import { LitElement, html, css } from 'lit';
 import { customElement } from 'lit/decorators.js';
 import '@vaadin/button';
-import { Router } from '@vaadin/router';
 
 @customElement('landing-view')
 export class LandingView extends LitElement {
+  connectedCallback() {
+    super.connectedCallback();
+    console.log('[landing-view] connectedCallback called');
+  }
   static styles = css`
     .landing-container {
       min-height: 100vh;
@@ -99,6 +102,7 @@ export class LandingView extends LitElement {
       font-weight: 500;
       border-radius: 8px;
       transition: all 0.2s;
+      cursor: pointer; /* ensure pointer cursor */
     }
     
     vaadin-button[theme~="primary"] {
@@ -125,15 +129,16 @@ export class LandingView extends LitElement {
   `;
 
   render() {
+    console.log('[landing-view] render called');
     return html`
       <div class="landing-container">
         <div class="card">
           <h1>Welcome to <span class="premium">Aurelian</span></h1>
           <p class="subtitle">
-            The CRM of distinction for those who lead. 
+            The CRM of distinction for those who lead.
             Where exceptional businesses cultivate lasting relationships.
           </p>
-          
+
           <div class="features">
             <div class="feature">
               <h3>Easy to Use</h3>
@@ -148,68 +153,72 @@ export class LandingView extends LitElement {
               <p>Your data is protected with the latest security measures.</p>
             </div>
           </div>
-          
+
           <div class="buttons">
-            <vaadin-button theme="primary" @click=${() => this.navigateTo('/register')}>Create Account</vaadin-button>
-            <vaadin-button theme="secondary" @click=${() => this.navigateTo('/login')}>Log In</vaadin-button>
+            <!-- Add data-path attributes and keep inline click as a safety net -->
+            <vaadin-button theme="primary" data-path="/register" @click=${() => this.navigateTo('/register')}>Create Account</vaadin-button>
+            <vaadin-button theme="secondary" data-path="/login" @click=${() => this.navigateTo('/login')}>Log In</vaadin-button>
           </div>
         </div>
       </div>
     `;
   }
 
-  private navigateTo(path: string) {
-    console.debug('[landing-view] navigateTo ->', path, 'current=', window.location.pathname);
-    // Prefer using the global router instance if it's available (created in main.ts).
-    const globalRouter = (window as any).vaadin && (window as any).vaadin.router;
-    if (globalRouter && typeof globalRouter.go === 'function') {
-      try {
-        console.debug('[landing-view] using globalRouter.go');
-        globalRouter.go(path);
-        return;
-      } catch (err) {
-        console.warn('[landing-view] global router.go failed, falling back to history API and notifying runtime router', err);
-        // fallthrough to history update below
-      }
-    }
-
-    // If there's no global router yet, immediately update history so the URL changes
-    // and the router can react to the popstate event whenever it becomes active.
+  // Attach explicit listeners after first update to ensure vaadin-button is rendered
+  firstUpdated() {
+    console.log('[landing-view] firstUpdated called');
     try {
-      history.pushState({}, '', path);
-      window.dispatchEvent(new PopStateEvent('popstate'));
-      console.debug('[landing-view] history.pushState executed');
-    } catch (err) {
-      console.warn('[landing-view] history.pushState failed, will try hard navigation', err);
-      try {
-        window.location.href = path;
-        return;
-      } catch (e) {
-        console.error('[landing-view] final navigation failed', e);
-        return;
-      }
-    }
-
-    // After updating history, attempt to inform the Router runtime if available (best-effort).
-    try {
-      if (typeof (Router as any).go === 'function') {
-        console.debug('[landing-view] calling static Router.go as notification');
-        (Router as any).go(path);
-      }
-    } catch (err) {
-      // Try dynamic import without blocking the flow — it's only a notification.
-      import('@vaadin/router')
-        .then(({ Router }) => {
-          if (typeof (Router as any).go === 'function') {
-            console.debug('[landing-view] dynamic import Router.go as notification');
-            (Router as any).go(path);
+      const root = this.shadowRoot as ShadowRoot;
+      if (!root) return;
+      const buttons = Array.from(root.querySelectorAll('vaadin-button')) as HTMLElement[];
+      console.log('[landing-view] found buttons:', buttons.length);
+      buttons.forEach((btn) => {
+        // Avoid attaching duplicate listeners
+        const alreadyAttached = (btn as any).__landingAttached;
+        if (alreadyAttached) return;
+        console.log('[landing-view] attaching click listener to button:', btn.textContent);
+        btn.addEventListener('click', (e: Event) => {
+          console.log('[landing-view] button clicked, path:', (e.currentTarget as HTMLElement).dataset?.path);
+          const target = e.currentTarget as HTMLElement & { dataset?: any };
+          const path = target?.dataset?.path;
+          if (path) {
+            this.navigateTo(path);
+          } else {
+            // fallback: if no data-path, inspect innerText
+            const txt = (target && (target.textContent || '')).toLowerCase();
+            if (txt.includes('register') || txt.includes('create')) {
+              this.navigateTo('/register');
+            } else if (txt.includes('login') || txt.includes('log')) {
+              this.navigateTo('/login');
+            }
           }
-        })
-        .catch((err2) => {
-          console.debug('[landing-view] dynamic import Router failed (non-fatal)', err2);
         });
+        (btn as any).__landingAttached = true;
+      });
+    } catch (err) {
+      console.warn('[landing-view] firstUpdated attach listeners failed', err);
     }
-   }
+  }
+
+  private navigateTo(path: string) {
+    console.log('[landing-view] navigateTo called with', path, 'current=', window.location.pathname);
+    // Manually render the component since router navigation is not working
+    const outlet = document.getElementById('outlet');
+    if (outlet) {
+      outlet.innerHTML = '';
+      if (path === '/register') {
+        const element = document.createElement('register-view');
+        outlet.appendChild(element);
+      } else if (path === '/login') {
+        const element = document.createElement('login-view');
+        outlet.appendChild(element);
+      }
+      history.pushState({}, '', path);
+      console.log('[landing-view] manually rendered', path);
+    } else {
+      console.warn('[landing-view] outlet not found');
+    }
+  }
  }
 
  declare global {

@@ -70,7 +70,7 @@ export class MainLayout extends LitElement {
             </a>
           </nav>
           <div class="sidebar-footer">
-            <vaadin-button theme="tertiary" @click="${this.handleLogout}" class="logout-button">
+            <vaadin-button theme="tertiary" @click=${this.handleLogout} class="logout-button">
               <vaadin-icon icon="vaadin:sign-out" slot="prefix"></vaadin-icon>
               Sign Out
             </vaadin-button>

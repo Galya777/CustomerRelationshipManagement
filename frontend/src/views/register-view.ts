@@ -10,17 +10,15 @@ declare module 'lit' {
 
 @customElement('register-view')
 export class RegisterView extends LitElement {
-  // Declare reactive state properties without initializers to avoid shadowing the accessors.
-  @state() private name!: string;
-  @state() private email!: string;
-  @state() private password!: string;
-  @state() private phone!: string;
-  @state() private error!: string | null;
-  @state() private success!: string | null;
+  @state() private name: string;
+  @state() private email: string;
+  @state() private password: string;
+  @state() private phone: string;
+  @state() private error: string | null;
+  @state() private success: string | null;
 
   constructor() {
     super();
-    // Initialize values in the constructor so they don't overwrite decorators' accessors.
     this.name = '';
     this.email = '';
     this.password = '';
@@ -154,31 +152,27 @@ export class RegisterView extends LitElement {
     }
   }
 
-  private async navigateTo(path: string) {
-    try {
-      // Prefer the global router instance created in main.ts
-      const r = (window as any).vaadin && (window as any).vaadin.router;
-      if (r && typeof r.go === 'function') {
-        r.go(path);
+  private navigateTo(path: string) {
+    console.debug('[register-view] navigateTo ->', path, 'current=', window.location.pathname);
+    // Manual rendering for known paths
+    const outlet = document.getElementById('outlet');
+    if (outlet) {
+      if (path === '/login') {
+        outlet.innerHTML = '';
+        const element = document.createElement('login-view');
+        outlet.appendChild(element);
+        history.pushState({}, '', path);
+        console.debug('[register-view] manually rendered login');
         return;
       }
-
-      // Fallback to history API
+    }
+    // Fallback
+    try {
       history.pushState({}, '', path);
       window.dispatchEvent(new PopStateEvent('popstate'));
     } catch (err) {
-      // As last resort, try notifying Router runtime then finally do hard navigation
-      try {
-        // Try using the static Router.go from module
-        (await import('@vaadin/router')).Router.go(path);
-        return;
-      } catch (e) {
-        try {
-          window.location.href = path;
-        } catch (finalErr) {
-          console.error('Navigation failed', finalErr);
-        }
-      }
+      console.warn('[register-view] navigateTo fallback failed', err);
+      window.location.href = path;
     }
   }
 

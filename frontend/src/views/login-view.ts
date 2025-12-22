@@ -1,11 +1,12 @@
 import { LitElement, html, css } from 'lit';
 import { customElement, state } from 'lit/decorators.js';
+import { apiService } from '../services/api';
 
 @customElement('login-view')
 export class LoginView extends LitElement {
-  @state() private username!: string;
-  @state() private password!: string;
-  @state() private error!: string | null;
+  @state() private username: string;
+  @state() private password: string;
+  @state() private error: string | null;
 
   constructor() {
     super();
@@ -117,7 +118,6 @@ export class LoginView extends LitElement {
 
     try {
       // Use Basic Auth verification via API service
-      const { apiService } = await import('../services/api');
       await apiService.login({ username: this.username, password: this.password });
       // On success, go to users page using global router when available
       this.navigateTo('/users');
@@ -129,21 +129,24 @@ export class LoginView extends LitElement {
 
   private navigateTo(path: string) {
     console.debug('[login-view] navigateTo ->', path, 'current=', window.location.pathname);
-    try {
-      // Prefer the global router instance created in main.ts
-      const r = (window as any).vaadin && (window as any).vaadin.router;
-      if (r && typeof r.go === 'function') {
-        console.debug('[login-view] using global router.go');
-        r.go(path);
+    // Manual rendering for known paths
+    const outlet = document.getElementById('outlet');
+    if (outlet) {
+      if (path === '/register') {
+        outlet.innerHTML = '';
+        const element = document.createElement('register-view');
+        outlet.appendChild(element);
+        history.pushState({}, '', path);
+        console.debug('[login-view] manually rendered register');
         return;
       }
-
-      // Fallback to history API
+    }
+    // Fallback
+    try {
       history.pushState({}, '', path);
       window.dispatchEvent(new PopStateEvent('popstate'));
     } catch (err) {
-      // As last resort, full navigation
-      console.warn('[login-view] navigateTo final fallback to window.location.href', err);
+      console.warn('[login-view] navigateTo fallback failed', err);
       window.location.href = path;
     }
   }

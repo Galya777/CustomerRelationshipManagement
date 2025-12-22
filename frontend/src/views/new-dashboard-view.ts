@@ -169,7 +169,7 @@ export class NewDashboardView extends LitElement {
             </div>
             <div class="user-info">
               <div class="user-name">${this.getCurrentUser()}</div>
-              <a href="#" @click="${this._onLogout}" class="logout-link">Sign out</a>
+              <a href="#" @click=${this._onLogout} class="logout-link">Sign out</a>
             </div>
           </div>
         </div>
@@ -182,13 +182,13 @@ export class NewDashboardView extends LitElement {
               <vaadin-text-field
                 placeholder="Search customers..."
                 clear-button-visible
-                .value="${this.searchQuery}"
-                @value-changed="${(e: CustomEvent) => this.searchQuery = e.detail.value}"
+                .value=${this.searchQuery}
+                @value-changed=${(e: CustomEvent) => this.searchQuery = e.detail.value}
               >
                 <vaadin-icon icon="vaadin:search" slot="prefix"></vaadin-icon>
               </vaadin-text-field>
             </div>
-            <vaadin-button theme="primary" @click="${this._addNewCustomer}">
+            <vaadin-button theme="primary" @click=${this._addNewCustomer}>
               <vaadin-icon icon="vaadin:plus" slot="prefix"></vaadin-icon>
               Add Customer
             </vaadin-button>
@@ -244,7 +244,7 @@ export class NewDashboardView extends LitElement {
                   (customer) => html`
                     <vaadin-button 
                       theme="tertiary" 
-                      @click="${() => this._editCustomer(customer)}"
+                      @click=${() => this._editCustomer(customer)}
                     >
                       <vaadin-icon icon="vaadin:edit"></vaadin-icon>
                     </vaadin-button>
@@ -259,9 +259,9 @@ export class NewDashboardView extends LitElement {
 
       <!-- Customer Dialog -->
       <vaadin-dialog
-        .opened="${this.showCustomerDialog}"
-        @opened-changed="${(e: CustomEvent) => this.showCustomerDialog = e.detail.value}"
-        .renderer="${this.customerFormRenderer}"
+        .opened=${this.showCustomerDialog}
+        @opened-changed=${(e: CustomEvent) => this.showCustomerDialog = e.detail.value}
+        .renderer=${this.customerFormRenderer}
       ></vaadin-dialog>
 
       <style>

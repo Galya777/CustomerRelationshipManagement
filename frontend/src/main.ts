@@ -21,11 +21,22 @@ async function initializeApp() {
 
     // Initialize the router
     const router = new Router(outlet);
-    
+    console.debug('[main] router created', router);
+
     // Make router available globally for navigation
     window.vaadin = window.vaadin || {};
     window.vaadin.router = router;
-    
+    (window as any).router = router;
+    console.log('[main] router set globally:', !!router);
+
+    // Dispatch an event so other components can react when router is ready
+    try {
+      window.dispatchEvent(new CustomEvent('vaadin-router-ready', { detail: { router } }));
+    } catch (e) {
+      // ignore if CustomEvent not supported
+    }
+
+
     // Set up routes
     router.setRoutes([
       {
@@ -88,6 +99,25 @@ async function initializeApp() {
     if (loading) {
       loading.remove();
     }
+
+    // Add popstate listener for manual navigation
+    window.addEventListener('popstate', () => {
+      const path = window.location.pathname;
+      const outlet = document.getElementById('outlet');
+      if (outlet) {
+        outlet.innerHTML = '';
+        if (path === '/') {
+          const element = document.createElement('landing-view');
+          outlet.appendChild(element);
+        } else if (path === '/login') {
+          const element = document.createElement('login-view');
+          outlet.appendChild(element);
+        } else if (path === '/register') {
+          const element = document.createElement('register-view');
+          outlet.appendChild(element);
+        }
+      }
+    });
 
   } catch (error) {
     console.error('Failed to initialize the app:', error);

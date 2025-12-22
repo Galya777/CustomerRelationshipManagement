@@ -30,7 +30,24 @@ async function initializeApp() {
 
     // Create the router
     const router = new Router(outlet);
-    
+
+    // Expose router globally so views/components can access it
+    try {
+      (window as any).vaadin = (window as any).vaadin || {};
+      (window as any).vaadin.router = router;
+      // Also provide a static convenience method so code that calls Router.go(...) works
+      try {
+        (Router as any).go = (...args: any[]) => (router as any).go(...args);
+      } catch (e) {
+        // ignore if not possible
+        console.debug('Could not attach Router.go delegate', e);
+      }
+      // Expose under window.router too for quick access
+      (window as any).router = router;
+    } catch (e) {
+      console.warn('Failed to expose router globally', e);
+    }
+
     // Set up routes with authentication
     router.setRoutes([
       {
