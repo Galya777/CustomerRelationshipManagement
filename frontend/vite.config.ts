@@ -2,7 +2,6 @@ import { defineConfig } from 'vite';
 import { resolve } from 'path';
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
-import typescript from "@rollup/plugin-typescript";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -10,6 +9,7 @@ const __dirname = dirname(__filename);
 export default defineConfig({
   root: '.',
   publicDir: 'public',
+  base: '/',
   server: {
     port: 3000,
     strictPort: true,
@@ -23,8 +23,12 @@ export default defineConfig({
       '/api': {
         target: process.env.VITE_API_TARGET || 'http://localhost:9194',
         changeOrigin: true,
-        secure: false
+        secure: false,
+        rewrite: (path) => path.replace(/^\/api/, '')
       }
+    },
+    hmr: {
+      overlay: true
     }
   },
   build: {
@@ -38,50 +42,16 @@ export default defineConfig({
       output: {
         entryFileNames: 'assets/[name]-[hash].js',
         chunkFileNames: 'assets/[name]-[hash].js',
-        assetFileNames: 'assets/[name]-[hash][extname]',
-        manualChunks: {
-          vendor: [
-            '@vaadin/router',
-            'lit',
-            '@vaadin/button',
-            '@vaadin/text-field',
-            '@vaadin/email-field',
-            '@vaadin/dialog',
-            '@vaadin/select',
-            '@vaadin/list-box',
-            '@vaadin/item',
-            '@vaadin/grid',
-            '@vaadin/icon',
-            '@vaadin/icons'
-          ]
-        }
-      }
-    }
-  },
-  optimizeDeps: {
-    esbuildOptions: {
-      target: 'es2020',
-      supported: {
-        'top-level-await': true
+        assetFileNames: 'assets/[name]-[hash][extname]'
       }
     }
   },
   resolve: {
     alias: {
       '@': resolve(__dirname, './src')
-    },
-    extensions: ['.ts', '.js', '.json', '.mjs']
+    }
   },
   define: {
     'process.env': {}
-  },
-  esbuild: {
-    jsxInject: `import { html, css, LitElement } from 'lit';`
-  },
-  plugins: [
-    typescript({
-      include: ['**/*.ts', '**/*.d.ts'],
-      tsconfig: './tsconfig.json'
-    })
-  ]
+  }
 });

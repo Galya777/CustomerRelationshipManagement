@@ -3,9 +3,16 @@ import { customElement, state } from 'lit/decorators.js';
 
 @customElement('login-view')
 export class LoginView extends LitElement {
-  @state() private username = '';
-  @state() private password = '';
-  @state() private error: string | null = null;
+  @state() private username!: string;
+  @state() private password!: string;
+  @state() private error!: string | null;
+
+  constructor() {
+    super();
+    this.username = '';
+    this.password = '';
+    this.error = null;
+  }
 
   static styles = css`
     .container {
@@ -99,12 +106,6 @@ export class LoginView extends LitElement {
     const t = e.target as HTMLInputElement;
     (this as any)[t.name] = t.value;
   }
-
-  private async getCsrfToken(): Promise<string> {
-    // CSRF is disabled on the backend for stateless Basic Auth. No token needed.
-    return '';
-  }
-
   private async onSubmit(e: Event) {
     e.preventDefault();
     this.error = null;
@@ -118,11 +119,32 @@ export class LoginView extends LitElement {
       // Use Basic Auth verification via API service
       const { apiService } = await import('../services/api');
       await apiService.login({ username: this.username, password: this.password });
-      // On success, go to users page
-      window.location.href = '/users';
+      // On success, go to users page using global router when available
+      this.navigateTo('/users');
     } catch (err) {
       this.error = 'Invalid username or password';
       console.error('Login error:', err);
+    }
+  }
+
+  private navigateTo(path: string) {
+    console.debug('[login-view] navigateTo ->', path, 'current=', window.location.pathname);
+    try {
+      // Prefer the global router instance created in main.ts
+      const r = (window as any).vaadin && (window as any).vaadin.router;
+      if (r && typeof r.go === 'function') {
+        console.debug('[login-view] using global router.go');
+        r.go(path);
+        return;
+      }
+
+      // Fallback to history API
+      history.pushState({}, '', path);
+      window.dispatchEvent(new PopStateEvent('popstate'));
+    } catch (err) {
+      // As last resort, full navigation
+      console.warn('[login-view] navigateTo final fallback to window.location.href', err);
+      window.location.href = path;
     }
   }
 
@@ -144,7 +166,7 @@ export class LoginView extends LitElement {
             </div>
             <div class="actions">
               <button class="btn-primary" type="submit">Log in</button>
-              <button class="btn-ghost" type="button" @click=${() => { window.history.pushState({}, '', '/register'); window.dispatchEvent(new PopStateEvent('popstate')); }}>
+              <button class="btn-ghost" type="button" @click=${() => { this.navigateTo('/register'); }}>
                 Create an account
               </button>
             </div>

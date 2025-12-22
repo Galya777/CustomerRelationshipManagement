@@ -1,3 +1,5 @@
+import { Router } from '@vaadin/router';
+
 export interface UserDto {
   id?: number;
   name: string; // frontend-combined name for convenience
@@ -42,8 +44,8 @@ class ApiService {
       // Clear auth data and redirect to login
       localStorage.removeItem('isAuthenticated');
       localStorage.removeItem('authHeader');
-      window.history.pushState({}, '', '/login');
-      window.dispatchEvent(new PopStateEvent('popstate'));
+      // Use Vaadin Router to trigger client-side navigation
+      Router.go('/login');
       throw new Error('Session expired. Please log in again.');
     }
 
@@ -196,3 +198,4 @@ class ApiService {
 }
 
 export const apiService = new ApiService();
+

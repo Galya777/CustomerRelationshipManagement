@@ -47,8 +47,8 @@ export class UserManagement extends LitElement {
     } catch (e) {
       // ignore
     }
-    window.history.pushState({}, '', '/login');
-    window.dispatchEvent(new PopStateEvent('popstate'));
+    // Use Vaadin Router for client-side navigation
+    import('@vaadin/router').then(({ Router }) => Router.go('/login'));
   }
 
   render() {

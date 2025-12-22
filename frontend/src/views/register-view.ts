@@ -2,14 +2,32 @@ import { LitElement, html, css } from 'lit';
 import { customElement, state } from 'lit/decorators.js';
 import { apiService } from '../services/api';
 
+declare module 'lit' {
+  interface HTMLElementTagNameMap {
+    'register-view': RegisterView;
+  }
+}
+
 @customElement('register-view')
 export class RegisterView extends LitElement {
-  @state() private name = '';
-  @state() private email = '';
-  @state() private password = '';
-  @state() private phone = '';
-  @state() private error: string | null = null;
-  @state() private success: string | null = null;
+  // Declare reactive state properties without initializers to avoid shadowing the accessors.
+  @state() private name!: string;
+  @state() private email!: string;
+  @state() private password!: string;
+  @state() private phone!: string;
+  @state() private error!: string | null;
+  @state() private success!: string | null;
+
+  constructor() {
+    super();
+    // Initialize values in the constructor so they don't overwrite decorators' accessors.
+    this.name = '';
+    this.email = '';
+    this.password = '';
+    this.phone = '';
+    this.error = null;
+    this.success = null;
+  }
 
   static styles = css`
     .container {
@@ -128,12 +146,39 @@ export class RegisterView extends LitElement {
       this.success = 'Account created successfully. Redirecting to log in...';
       // Redirect after a tiny delay so the user can see success
       setTimeout(() => {
-        window.history.pushState({}, '', '/login');
-        window.dispatchEvent(new PopStateEvent('popstate'));
+        this.navigateTo('/login');
       }, 700);
     } catch (err) {
       this.error = err instanceof Error ? err.message : 'Failed to register';
       console.error(err);
+    }
+  }
+
+  private async navigateTo(path: string) {
+    try {
+      // Prefer the global router instance created in main.ts
+      const r = (window as any).vaadin && (window as any).vaadin.router;
+      if (r && typeof r.go === 'function') {
+        r.go(path);
+        return;
+      }
+
+      // Fallback to history API
+      history.pushState({}, '', path);
+      window.dispatchEvent(new PopStateEvent('popstate'));
+    } catch (err) {
+      // As last resort, try notifying Router runtime then finally do hard navigation
+      try {
+        // Try using the static Router.go from module
+        (await import('@vaadin/router')).Router.go(path);
+        return;
+      } catch (e) {
+        try {
+          window.location.href = path;
+        } catch (finalErr) {
+          console.error('Navigation failed', finalErr);
+        }
+      }
     }
   }
 
@@ -164,7 +209,7 @@ export class RegisterView extends LitElement {
             </div>
             <div class="actions">
               <button class="btn-primary" type="submit">Create account</button>
-              <button class="btn-ghost" type="button" @click=${() => { window.history.pushState({}, '', '/login'); window.dispatchEvent(new PopStateEvent('popstate')); }}>
+              <button class="btn-ghost" type="button" @click=${() => { this.navigateTo('/login'); }}>
                 Back to log in
               </button>
             </div>
@@ -172,11 +217,5 @@ export class RegisterView extends LitElement {
         </div>
       </div>
     `;
-  }
-}
-
-declare global {
-  interface HTMLElementTagNameMap {
-    'register-view': RegisterView;
   }
 }
