@@ -24,7 +24,10 @@ export default defineConfig({
         target: process.env.VITE_API_TARGET || 'http://localhost:9194',
         changeOrigin: true,
         secure: false,
-        rewrite: (path) => path.replace(/^\/api/, '')
+        // Keep the /api prefix when proxying so backend controllers mapped under
+        // "/api" (e.g. @RequestMapping("/api/users")) receive the correct path.
+        // Previously the config stripped "/api" which caused 404s/401s on login.
+        rewrite: (path) => path
       }
     },
     hmr: {
