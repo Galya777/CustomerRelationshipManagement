@@ -15,6 +15,7 @@
     <description>CustomerRelationshipManagement</description>
     <properties>
         <java.version>20</java.version>
+        <lombok.version>1.18.36</lombok.version>
         <hilla.version>2.1.4</hilla.version>
         <vaadin.version>24.1.4</vaadin.version>
     </properties>
@@ -45,6 +46,17 @@
             <artifactId>spring-boot-starter-thymeleaf</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+            <version>2.2.0</version>
+        </dependency>
+
         <!-- Database -->
         <dependency>
             <groupId>com.h2database</groupId>
@@ -67,6 +79,7 @@
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
+            <version>${lombok.version}</version>
             <optional>true</optional>
         </dependency>
 

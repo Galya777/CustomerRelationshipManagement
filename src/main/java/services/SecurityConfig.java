@@ -42,6 +42,17 @@ public class SecurityConfig {
                 // Permit registration endpoint (any method to be safe)
                 .requestMatchers(new AntPathRequestMatcher("/api/users/register")).permitAll()
                 .requestMatchers(new AntPathRequestMatcher("/api/test/public")).permitAll()
+                // Actuator
+                .requestMatchers(
+                        new AntPathRequestMatcher("/actuator/health/**"),
+                        new AntPathRequestMatcher("/actuator/info")
+                ).permitAll()
+                // Swagger / OpenAPI
+                .requestMatchers(
+                        new AntPathRequestMatcher("/v3/api-docs/**"),
+                        new AntPathRequestMatcher("/swagger-ui/**"),
+                        new AntPathRequestMatcher("/swagger-ui.html")
+                ).permitAll()
                 // Static/frontend resources
                 .requestMatchers(
                         new AntPathRequestMatcher("/"),
@@ -51,6 +62,8 @@ public class SecurityConfig {
                         new AntPathRequestMatcher("/frontend/**"),
                         new AntPathRequestMatcher("/VAADIN/**")
                 ).permitAll()
+                // Any other actuator endpoints require authentication
+                .requestMatchers(new AntPathRequestMatcher("/actuator/**")).authenticated()
                 // Everything else under /api/** requires authentication
                 .requestMatchers(new AntPathRequestMatcher("/api/**")).authenticated()
                 // Any non-api requests are permitted (serving frontend/dev tools)

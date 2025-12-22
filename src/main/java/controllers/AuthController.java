@@ -1,7 +1,9 @@
 package controllers;
 
 import dto.LoginRequest;
+import dto.RegisterRequest;
 import dto.UserDto;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -31,7 +33,7 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> authenticateUser(@RequestBody LoginRequest loginRequest) {
+    public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
         System.out.println("Login attempt for username: " + loginRequest.getUsername());
         try {
             // For now, just check if the user exists and password matches
@@ -55,16 +57,24 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<?> registerUser(@RequestBody UserDto userDto) {
+    public ResponseEntity<?> registerUser(@Valid @RequestBody RegisterRequest registerRequest) {
         try {
             // Check if user already exists
-            if (userService.userExists(userDto.getEmail())) {
+            if (userService.userExists(registerRequest.getEmail())) {
                 Map<String, String> errorResponse = new HashMap<>();
                 errorResponse.put("error", "Email is already in use");
                 return ResponseEntity.badRequest().body(errorResponse);
             }
             
             // Register the user - password will be encoded in UserService
+            UserDto userDto = new UserDto();
+            userDto.setEmail(registerRequest.getEmail());
+            userDto.setPassword(registerRequest.getPassword());
+            userDto.setFirstName(registerRequest.getFirstName());
+            userDto.setLastName(registerRequest.getLastName());
+            userDto.setCountry(registerRequest.getCountry());
+            userDto.setLeader(registerRequest.isLeader());
+
             UserDto createdUser = userService.registerUser(userDto);
             return ResponseEntity.ok(createdUser);
         } catch (Exception e) {
