@@ -4,6 +4,7 @@ import './views/register-view';
 import './views/landing-view';
 import './components/user-management';
 
+
 declare global {
   interface Window {
     vaadin: {
@@ -82,6 +83,17 @@ async function initializeApp() {
           return import('./components/user-management');
         }
       },
+
+      {
+        path: '/dashboard',
+        component: 'new-dashboard-view',
+        action: (_context: any, commands: any) => {
+          if (localStorage.getItem('isAuthenticated') !== 'true') {
+            return commands.redirect('/login');
+          }
+          return import('./views/new-dashboard-view');
+        }
+      },
       // Add a catch-all route for 404
       {
         path: '(.*)',
@@ -103,7 +115,7 @@ async function initializeApp() {
     }
     // Redirect to users if already logged in and trying to access auth pages
     else if (isLoggedIn && ['/login', '/register'].includes(currentPath)) {
-      Router.go('/users');
+      Router.go('/dashboard');
     }
 
     // Remove loading indicator

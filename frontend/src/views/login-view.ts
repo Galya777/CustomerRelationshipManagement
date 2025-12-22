@@ -130,13 +130,8 @@ export class LoginView extends LitElement {
 
   private navigateTo(path: string) {
     console.debug('[login-view] navigateTo ->', path, 'current=', window.location.pathname);
-    // Use Vaadin Router instance
-    const outlet = document.getElementById('outlet');
-    if (outlet && (window as any).router) {
-      (window as any).router.render(path, outlet);
-    } else {
-      Router.go(path);
-    }
+    // Use Vaadin Router navigation API (updates history + triggers route actions)
+    Router.go(path);
   }
 
   render() {

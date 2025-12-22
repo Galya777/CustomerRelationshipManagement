@@ -14,9 +14,7 @@ import '@vaadin/tabsheet';
 import {columnBodyRenderer} from "@vaadin/grid/lit";
 import {Router} from "@vaadin/router";
 import { apiService } from '../services/api.js';
-import './research-management';
-import './group-management';
-import './product-monitoring';
+import type { UserDto } from '../services/api.d';
 
 declare global {
   interface HTMLElementTagNameMap {
@@ -24,33 +22,13 @@ declare global {
   }
 }
 
-// Type definitions
-interface User {
-  username: string;
-  name: string;
-  role: string;
-}
-
-interface Customer {
-  id?: number;
-  name: string;
-  email: string;
-  phone?: string;
-  firstName?: string;
-  lastName?: string;
-  password?: string;
-  country?: string;
-  birthDate?: string;
-  role?: 'ANONYMOUS' | 'CLIENT' | 'LEADER' | 'ADMIN';
-  isLeader?: boolean;
-}
+// Type definitions - using UserDto from api.d.ts
 
 @customElement('new-dashboard-view')
 export class NewDashboardView extends LitElement {
   @state()
-  // @ts-ignore - Will be used later
-  private user!: User | null;
-  @state() private customers!: Customer[];
+  private user: UserDto | null = null;
+  @state() private customers!: UserDto[] | any[];
   @state() private searchQuery!: string;
   @state()
   // @ts-ignore - Will be used later
@@ -66,7 +44,7 @@ export class NewDashboardView extends LitElement {
   }
 
   // Filtered customers based on search query
-  private get filteredCustomers(): Customer[] {
+  private get filteredCustomers(): UserDto[] | any[] {
     if (!this.searchQuery) return this.customers;
     const query = this.searchQuery.toLowerCase();
     return this.customers.filter(customer =>
@@ -77,41 +55,95 @@ export class NewDashboardView extends LitElement {
   }
 
   // Lifecycle methods
-  override firstUpdated(): void {
-    this._checkAuth();
-    this._loadCustomers();
+  override async firstUpdated(): Promise<void> {
+    console.log('Dashboard first updated');
+    await this._checkAuth();
+    
+    // Only try to load customers if we're authenticated
+    if (this.user) {
+      await this._loadCustomers();
+    }
   }
 
-  private _checkAuth(): void {
+  private async _checkAuth(): Promise<void> {
     try {
       const isAuthenticated = localStorage.getItem('isAuthenticated');
-      if (isAuthenticated !== 'true') {
+      const username = localStorage.getItem('username');
+      const userData = localStorage.getItem('user');
+      
+      console.log('Checking auth state:', { isAuthenticated, username });
+      
+      if (isAuthenticated !== 'true' || !username) {
+        console.log('Not authenticated or missing username, redirecting to login');
         Router.go('/login');
         return;
       }
-      // For now, set a dummy user
-      this.user = { username: localStorage.getItem('username') || 'User', name: 'User', role: 'CLIENT' };
+      
+      try {
+        // Try to get fresh user data from the API
+        const user = await apiService.getUserByUsername(username);
+        this.user = user;
+      } catch (error) {
+        console.warn('Failed to fetch fresh user data, using stored data', error);
+        // Fallback to stored user data if API call fails
+        if (userData) {
+          this.user = JSON.parse(userData);
+        } else {
+          // Create a minimal user object if no stored data is available
+          this.user = { 
+            id: 0,
+            email: username,
+            firstName: username,
+            role: localStorage.getItem('role') || 'CLIENT',
+            isLeader: false
+          };
+        }
+      }
+      
+      console.log('User authenticated:', this.user);
+      
     } catch (error) {
       console.error('Authentication error:', error);
+      // Ensure we redirect to login on any error
       Router.go('/login');
     }
   }
 
   private async _loadCustomers(): Promise<void> {
+    // Don't try to load if we're not authenticated
+    if (!this.user) {
+      console.log('User not authenticated, skipping customer load');
+      return;
+    }
+
     this.isLoading = true;
+    this.requestUpdate(); // Ensure UI updates to show loading state
 
     try {
-      this.customers = await apiService.getAllUsers();
-      this.isLoading = false;
+      console.log('Loading customers...');
+      const users = await apiService.getAllUsers();
+      
+      // Ensure we have an array and handle potential API response formats
+      this.customers = Array.isArray(users) ? users : [];
+      console.log(`Loaded ${this.customers.length} customers`);
+      
     } catch (error) {
       console.error('Failed to load users:', error);
-      this.isLoading = false;
       // Show error to user
       this.dispatchEvent(new CustomEvent('error', {
-        detail: { message: 'Failed to load users. Please try again later.' },
+        detail: { 
+          message: 'Failed to load users. Please try again later.',
+          error: error instanceof Error ? error.message : String(error)
+        },
         bubbles: true,
         composed: true
       }));
+      
+      // Initialize empty array to prevent template errors
+      this.customers = [];
+    } finally {
+      this.isLoading = false;
+      this.requestUpdate(); // Ensure UI updates when loading is complete
     }
   }
 

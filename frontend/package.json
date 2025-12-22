@@ -25,6 +25,8 @@
     "@vaadin/overlay": "^24.9.5",
     "@vaadin/router": "^1.7.5",
     "@vaadin/select": "^24.9.5",
+    "@vaadin/tabs": "^25.0.1",
+    "@vaadin/tabsheet": "^25.0.1",
     "@vaadin/text-field": "^24.9.5",
     "@vaadin/vaadin-lumo-styles": "^24.9.5",
     "@vaadin/vaadin-themable-mixin": "^24.9.5",

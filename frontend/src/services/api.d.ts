@@ -1,8 +1,17 @@
 // User related types
 export interface UserDto {
   id?: number;
-  name: string;
+  // Backend fields
   email: string;
+  firstName?: string;
+  lastName?: string;
+  country?: string;
+  birthDate?: string;
+  role?: string;
+  isLeader?: boolean;
+
+  // Frontend convenience fields (used by some UI components)
+  name?: string;
   phone?: string;
   password?: string;
 }
@@ -11,6 +20,12 @@ export interface UserDto {
 export interface GroupDto {
   id?: number;
   name: string;
+  tokenKey?: string;
+  creationDate?: string;
+  createdByUserId?: number;
+  memberIds?: number[];
+
+  // Backward-compatible field (may be used by older UI code)
   description?: string;
 }
 
@@ -19,20 +34,24 @@ export interface ProductDto {
   id?: number;
   name: string;
   description?: string;
-  price: number;
-  groupId: number;
+  income?: number | string;
+  tags?: string[];
+  buyerIds?: number[];
+
+  // Backward-compatible fields (may be used by older UI code)
+  price?: number;
+  groupId?: number;
 }
 
 // Research related types
 export interface ResearchDto {
   id?: number;
-  title: string;
-  description?: string;
-  startDate: string;
-  endDate?: string;
-  status: 'PLANNED' | 'IN_PROGRESS' | 'COMPLETED' | 'CANCELLED';
-  userId: number;
-  groupId: number;
+  name: string;
+  subject: string;
+  description: string;
+  tags: string[];
+  createdByUserId?: number;
+  questions?: any[];
 }
 
 declare class ApiService {
