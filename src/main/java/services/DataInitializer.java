@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import repositories.*;
 
 import java.math.BigDecimal;
@@ -20,6 +21,7 @@ public class DataInitializer {
     private final ProductRepository productRepository;
     private final ResearchRepository researchRepository;
     private final QuestionRepository questionRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Bean
     public CommandLineRunner loadData() {
@@ -34,10 +36,20 @@ public class DataInitializer {
     }
 
     private void initializeData() {
-        // Create users
+        // Create test user first - THIS IS THE PRIMARY TEST ACCOUNT
+        User testUser = new User();
+        testUser.setEmail("test1");
+        testUser.setPassword(passwordEncoder.encode("123456789"));
+        testUser.setFirstName("Test");
+        testUser.setLastName("User");
+        testUser.setCountry("Bulgaria");
+        testUser.setBirthDate(LocalDate.of(1992, 11, 30));
+        testUser.setRole(Role.CLIENT);
+        userRepository.save(testUser);
+
         User admin = new User();
         admin.setEmail("admin@crm.com");
-        admin.setPassword("admin");
+        admin.setPassword(passwordEncoder.encode("admin"));
         admin.setFirstName("Admin");
         admin.setLastName("User");
         admin.setCountry("Bulgaria");
@@ -48,7 +60,7 @@ public class DataInitializer {
 
         User maria = new User();
         maria.setEmail("maria@crm.com");
-        maria.setPassword("maria123");
+        maria.setPassword(passwordEncoder.encode((CharSequence)"maria123"));
         maria.setFirstName("Maria");
         maria.setLastName("Koleva");
         maria.setCountry("Bulgaria");
@@ -59,7 +71,7 @@ public class DataInitializer {
 
         User ivan = new User();
         ivan.setEmail("ivan@crm.com");
-        ivan.setPassword("ivan123");
+        ivan.setPassword(passwordEncoder.encode((CharSequence)"ivan123"));
         ivan.setFirstName("Ivan");
         ivan.setLastName("Petrov");
         ivan.setCountry("Bulgaria");
@@ -70,7 +82,7 @@ public class DataInitializer {
 
         User alex = new User();
         alex.setEmail("alex@example.com");
-        alex.setPassword("alex123");
+        alex.setPassword(passwordEncoder.encode((CharSequence)"alex123"));
         alex.setFirstName("Alexandra");
         alex.setLastName("Angelova");
         alex.setCountry("Bulgaria");
@@ -80,18 +92,17 @@ public class DataInitializer {
 
         User test = new User();
         test.setEmail("test@test.com");
-        test.setPassword("test123");
+        test.setPassword(passwordEncoder.encode((CharSequence)"test123"));
         test.setFirstName("Test");
-        test.setLastName("User");
+        test.setLastName("User2");
         test.setCountry("Bulgaria");
         test.setBirthDate(LocalDate.of(1992, 11, 30));
         test.setRole(Role.CLIENT);
         userRepository.save(test);
 
-        // More users
         User nikola = new User();
         nikola.setEmail("nikola@example.com");
-        nikola.setPassword("pass123");
+        nikola.setPassword(passwordEncoder.encode((CharSequence)"pass123"));
         nikola.setFirstName("Nikola");
         nikola.setLastName("Vasilev");
         nikola.setCountry("Bulgaria");
@@ -101,7 +112,7 @@ public class DataInitializer {
 
         User katya = new User();
         katya.setEmail("katya@example.com");
-        katya.setPassword("pass123");
+        katya.setPassword(passwordEncoder.encode((CharSequence)"pass123"));
         katya.setFirstName("Katerina");
         katya.setLastName("Dimitrova");
         katya.setCountry("Bulgaria");
@@ -111,7 +122,7 @@ public class DataInitializer {
 
         User george = new User();
         george.setEmail("george@example.com");
-        george.setPassword("pass123");
+        george.setPassword(passwordEncoder.encode((CharSequence)"pass123"));
         george.setFirstName("Georgi");
         george.setLastName("Popov");
         george.setCountry("Bulgaria");
@@ -121,7 +132,7 @@ public class DataInitializer {
 
         User sophia = new User();
         sophia.setEmail("sophia@example.com");
-        sophia.setPassword("pass123");
+        sophia.setPassword(passwordEncoder.encode((CharSequence)"pass123"));
         sophia.setFirstName("Sophia");
         sophia.setLastName("Ivanova");
         sophia.setCountry("Bulgaria");
@@ -131,7 +142,7 @@ public class DataInitializer {
 
         User dmitri = new User();
         dmitri.setEmail("dmitri@example.com");
-        dmitri.setPassword("pass123");
+        dmitri.setPassword(passwordEncoder.encode((CharSequence)"pass123"));
         dmitri.setFirstName("Dmitri");
         dmitri.setLastName("Sokolov");
         dmitri.setCountry("Russia");
@@ -167,7 +178,7 @@ public class DataInitializer {
         // Create products
         Product p1 = new Product();
         p1.setName("CRM Pro License");
-        p1.setDescription("Premium CRM with advanced analytics");
+        p1.setDescription("Premium CRM with analytics");
         p1.setIncome(new BigDecimal("99.99"));
         p1.setTags(Arrays.asList("enterprise", "crm", "saas"));
         productRepository.save(p1);

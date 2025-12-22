@@ -34,22 +34,26 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
-        System.out.println("Login attempt for username: " + loginRequest.getUsername());
+        String username = loginRequest.getUsername();
+        String password = loginRequest.getPassword();
+
+        System.out.println("Login attempt for username/email: " + username);
         try {
-            // For now, just check if the user exists and password matches
-            if (userService.authenticate(loginRequest.getUsername(), loginRequest.getPassword())) {
+            // Try to authenticate with the provided username (which could be email or username)
+            // The username field is used as email in the database (e.g., "test1")
+            if (userService.authenticate(username, password)) {
                 Map<String, String> response = new HashMap<>();
                 response.put("message", "Login successful");
-                System.out.println("Login successful for: " + loginRequest.getUsername());
+                System.out.println("Login successful for: " + username);
                 return ResponseEntity.ok(response);
             } else {
                 Map<String, String> errorResponse = new HashMap<>();
                 errorResponse.put("error", "Invalid username or password");
-                System.out.println("Login failed for: " + loginRequest.getUsername());
+                System.out.println("Login failed for: " + username);
                 return ResponseEntity.badRequest().body(errorResponse);
             }
         } catch (Exception e) {
-            System.out.println("Login exception for: " + loginRequest.getUsername() + " - " + e.getMessage());
+            System.out.println("Login exception for: " + username + " - " + e.getMessage());
             Map<String, String> errorResponse = new HashMap<>();
             errorResponse.put("error", "Login failed: " + e.getMessage());
             return ResponseEntity.badRequest().body(errorResponse);

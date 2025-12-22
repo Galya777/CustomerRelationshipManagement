@@ -64,12 +64,14 @@ public class UserService {
         Optional<User> userOpt = userRepository.findByEmail(email);
         if (userOpt.isPresent()) {
             User user = userOpt.get();
-            System.out.println("User found: " + user.getEmail() + ", encoded password: " + user.getPassword());
+            System.out.println("User found: " + user.getEmail() + ", checking password match");
+            System.out.println("Provided password: " + password);
+            System.out.println("Stored password hash: " + user.getPassword());
             boolean matches = passwordEncoder.matches(password, user.getPassword());
             System.out.println("Password matches: " + matches);
             return matches;
         } else {
-            System.out.println("User not found: " + email);
+            System.out.println("User not found with email: " + email);
             return false;
         }
     }

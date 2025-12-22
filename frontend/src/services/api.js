@@ -95,19 +95,38 @@ class ApiService {
 
     // @ts-ignore
     async login(credentials) {
-        const token = btoa(`${credentials.username}:${credentials.password}`);
         try {
-            const response = await fetch(`${API_BASE_URL}/users/me`, {
+            // Send login request to /api/auth/login endpoint
+            const response = await fetch(`${API_BASE_URL}/auth/login`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    username: credentials.username,
+                    password: credentials.password
+                })
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.error || 'Invalid credentials');
+            }
+
+            // After successful login, get user info
+            const token = btoa(`${credentials.username}:${credentials.password}`);
+            const userResponse = await fetch(`${API_BASE_URL}/users/me`, {
                 headers: {
                     'Authorization': `Basic ${token}`
                 }
             });
-            if (!response.ok) {
-                throw new Error('Invalid credentials');
+
+            let user = null;
+            if (userResponse.ok) {
+                user = await userResponse.json();
             }
-            const user = await response.json();
-            // Note: localStorage is now managed by authService, not here
-            console.log('[ApiService] Login successful for user:', user.email);
+
+            console.log('[ApiService] Login successful for user:', credentials.username);
             return { user, token: `Basic ${token}` };
         } catch (error) {
             console.error('[ApiService] Login failed:', error);
