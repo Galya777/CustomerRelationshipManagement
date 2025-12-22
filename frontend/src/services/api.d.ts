@@ -67,6 +67,7 @@ declare class ApiService {
   
   // Auth methods
   login(credentials: { username: string; password: string }): Promise<{ user: UserDto }>;
+  getCurrentUser<T = UserDto>(): Promise<T>;
   
   // Group API methods
   getAllGroups<T = GroupDto[]>(): Promise<T>;

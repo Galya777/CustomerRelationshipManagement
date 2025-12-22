@@ -95,6 +95,11 @@ class ApiService {
         }
     }
 
+    // @ts-ignore
+    async getCurrentUser() {
+        return this.request('/users/me');
+    }
+
     // Research API methods
     // @ts-ignore
     async getAllResearches() {

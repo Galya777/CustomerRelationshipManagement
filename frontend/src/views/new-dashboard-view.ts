@@ -81,7 +81,7 @@ export class NewDashboardView extends LitElement {
       
       try {
         // Try to get fresh user data from the API
-        const user = await apiService.getUserByUsername(username);
+        const user = await apiService.getCurrentUser();
         this.user = user;
       } catch (error) {
         console.warn('Failed to fetch fresh user data, using stored data', error);
@@ -243,7 +243,7 @@ export class NewDashboardView extends LitElement {
               <vaadin-grid .items="${filteredCustomers}" class="customer-grid">
                  <vaadin-grid-column
                    header="Name"
-                   ${columnBodyRenderer<Customer>(
+                   ${columnBodyRenderer<UserDto>(
                      (customer) => html`${`${customer.firstName || ''} ${customer.lastName || ''}`.trim()}`,
                      []
                    )}
@@ -252,7 +252,7 @@ export class NewDashboardView extends LitElement {
                  <vaadin-grid-column path="phone" header="Phone" auto-width></vaadin-grid-column>
                  <vaadin-grid-column
                    header="Role"
-                   ${columnBodyRenderer<Customer>(
+                   ${columnBodyRenderer<UserDto>(
                      (customer) => html`
                        <span class="status-badge status-${this.getRoleClass(customer.role)}">
                          ${customer.role}
