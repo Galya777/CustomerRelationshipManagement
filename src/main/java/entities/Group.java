@@ -1,12 +1,18 @@
 package entities;
 
 import jakarta.persistence.*;
+import lombok.*;
 
 import java.time.LocalDate;
 import java.util.List;
 
 @Entity
 @Table(name = "groups")
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class Group {
     @Id
     @GeneratedValue
@@ -20,6 +26,7 @@ public class Group {
     private User createdBy;
 
     @ManyToMany
-    private List<User> members;
+    @Builder.Default
+    private List<User> members = new java.util.ArrayList<>();
 }
 

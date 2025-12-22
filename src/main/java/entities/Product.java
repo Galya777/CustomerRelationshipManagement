@@ -1,11 +1,17 @@
 package entities;
 
 import jakarta.persistence.*;
+import lombok.*;
 
 import java.math.BigDecimal;
 import java.util.List;
 
 @Entity
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class Product {
     @Id
     @GeneratedValue
@@ -20,5 +26,6 @@ public class Product {
     private List<String> tags;
 
     @ManyToMany
-    private List<User> buyers;
+    @Builder.Default
+    private List<User> buyers = new java.util.ArrayList<>();
 }
