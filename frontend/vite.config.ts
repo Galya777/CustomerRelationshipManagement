@@ -21,7 +21,7 @@ export default defineConfig({
     },
     proxy: {
       '/api': {
-        target: process.env.VITE_API_TARGET || 'http://localhost:9194',
+        target: process.env.VITE_API_TARGET || 'http://localhost:9192',
         changeOrigin: true,
         secure: false,
         // Keep the /api prefix when proxying so backend controllers mapped under

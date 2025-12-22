@@ -15,25 +15,23 @@
       --text-color: #1f2937;
       --text-secondary: #6b7280;
       --light-gray: #f9fafb;
+      --border-color: #e5e7eb;
+      --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+      --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
     }
+
     body {
       margin: 0;
       padding: 0;
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
     }
+
     #app {
       min-height: 100vh;
       display: flex;
       flex-direction: column;
     }
-      --text-color: #1f2937;
-      --text-secondary: #6b7280;
-      --light-gray: #f9fafb;
-      --border-color: #e5e7eb;
-      --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-      --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-    }
-    
+
     * {
       box-sizing: border-box;
       margin: 0;
@@ -183,7 +181,25 @@
       </div>
     </div>
   </div>
-  
+  <script>
+    // Defensive guard: some libraries call CSS.registerProperty multiple times which can throw
+    // a DOMException in some browsers. Wrap registerProperty to ignore 'already registered' errors.
+    if (typeof CSS !== 'undefined' && CSS.registerProperty) {
+      const origRegister = CSS.registerProperty.bind(CSS);
+      CSS.registerProperty = (prop) => {
+        try {
+          return origRegister(prop);
+        } catch (e) {
+          // Ignore if the property is already registered
+          if (e instanceof DOMException && /already registered/i.test(e.message)) {
+            console.debug('Ignored already-registered CSS property:', prop.name);
+            return;
+          }
+          throw e;
+        }
+      };
+    }
+  </script>
   <script type="module" src="/src/main.ts"></script>
 </body>
 </html>

@@ -1,7 +1,25 @@
 const API_BASE_URL = '/api';
+
+// Import auth service for getting current auth token
+// Note: We can't use ES6 import in JS file, so we'll access it from window if needed
+// or lazy-load when methods are called
+
 // @ts-ignore
 class ApiService {
     getAuthHeader() {
+        // Try to get from auth service if available
+        try {
+            if (window.__authService) {
+                const token = window.__authService.getToken();
+                if (token) {
+                    return { 'Authorization': token };
+                }
+            }
+        } catch (e) {
+            // Fall back to localStorage if auth service not available
+        }
+
+        // Fallback to localStorage
         const token = localStorage.getItem('authHeader');
         if (token) {
             return { 'Authorization': token };
@@ -34,6 +52,11 @@ class ApiService {
     async getUserById(id) {
         return this.request(`/users/${id}`);
     }
+    // @ts-ignore
+    async getUserProfile() {
+        return this.request('/users/me');
+    }
+    
     // @ts-ignore
     async createUser(user) {
         // Transform frontend user object to match backend UserDto structure
@@ -83,14 +106,11 @@ class ApiService {
                 throw new Error('Invalid credentials');
             }
             const user = await response.json();
-            localStorage.setItem('authHeader', `Basic ${token}`);
-            localStorage.setItem('isAuthenticated', 'true');
-            localStorage.setItem('username', credentials.username);
-            return { user };
+            // Note: localStorage is now managed by authService, not here
+            console.log('[ApiService] Login successful for user:', user.email);
+            return { user, token: `Basic ${token}` };
         } catch (error) {
-            localStorage.removeItem('authHeader');
-            localStorage.removeItem('isAuthenticated');
-            localStorage.removeItem('username');
+            console.error('[ApiService] Login failed:', error);
             throw error;
         }
     }

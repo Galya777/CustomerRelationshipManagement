@@ -2,6 +2,7 @@ import { LitElement, html, css } from 'lit';
 import { customElement, state } from 'lit/decorators.js';
 import { Router } from '@vaadin/router';
 import { apiService } from '@/services/api';
+import { authService } from '@/services/auth';
 
 @customElement('login-view')
 export class LoginView extends LitElement {
@@ -119,7 +120,14 @@ export class LoginView extends LitElement {
 
     try {
       // Use Basic Auth verification via API service
-      await apiService.login({ username: this.username, password: this.password });
+      const response = await apiService.login({ username: this.username, password: this.password });
+
+      // Extract token from Basic Auth header
+      const token = btoa(`${this.username}:${this.password}`);
+
+      // Store authentication state in auth service
+      authService.setAuthenticated(`Basic ${token}`, this.username, response?.user);
+
       // On success, go to dashboard page using global router when available
       this.navigateTo('/dashboard');
     } catch (err) {

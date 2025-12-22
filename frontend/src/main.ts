@@ -1,4 +1,6 @@
 import { Router } from '@vaadin/router';
+import { routeConfig } from './router';
+import { authService } from './services/auth';
 import './views/login-view';
 import './views/register-view';
 import './views/landing-view';
@@ -11,6 +13,7 @@ declare global {
       router?: Router;
       [key: string]: any;
     };
+    __authService?: any;
   }
 }
 
@@ -21,7 +24,10 @@ async function initializeApp() {
       throw new Error('Could not find the outlet element');
     }
 
-    // Initialize the router
+    // Make auth service available globally for API service to use
+    (window as any).__authService = authService;
+
+    // Initialize the router with a single instance
     const router = new Router(outlet);
     console.debug('[main] router created', router);
 
@@ -38,74 +44,11 @@ async function initializeApp() {
       // ignore if CustomEvent not supported
     }
 
+    // Set up routes from configuration
+    router.setRoutes(routeConfig);
 
-    // Set up routes
-    router.setRoutes([
-      {
-        path: '/',
-        component: 'landing-view',
-        action: () => {
-          // Ensure the component is loaded
-          import('./views/landing-view');
-        }
-      },
-      {
-        path: '/login',
-        component: 'login-view',
-        // Use the router's action arguments so we can return a commands.redirect to avoid hard reloads
-        action: (_context: any, commands: any) => {
-          // Check if already logged in
-          if (localStorage.getItem('isAuthenticated') === 'true') {
-            return commands.redirect('/users');
-          }
-          return import('./views/login-view');
-        }
-      },
-      {
-        path: '/register',
-        component: 'register-view',
-        action: (_context: any, commands: any) => {
-          // Check if already logged in
-          if (localStorage.getItem('isAuthenticated') === 'true') {
-            return commands.redirect('/users');
-          }
-          return import('./views/register-view');
-        }
-      },
-      {
-        path: '/users',
-        component: 'user-management',
-        action: (_context: any, commands: any) => {
-          // Check if not logged in
-          if (localStorage.getItem('isAuthenticated') !== 'true') {
-            return commands.redirect('/login');
-          }
-          return import('./components/user-management');
-        }
-      },
-
-      {
-        path: '/dashboard',
-        component: 'new-dashboard-view',
-        action: (_context: any, commands: any) => {
-          if (localStorage.getItem('isAuthenticated') !== 'true') {
-            return commands.redirect('/login');
-          }
-          return import('./views/new-dashboard-view');
-        }
-      },
-      // Add a catch-all route for 404
-      {
-        path: '(.*)',
-        component: 'landing-view',
-        action: () => {
-          import('./views/landing-view');
-        }
-      }
-    ]);
-
-    // Check authentication status on page load
-    const isLoggedIn = localStorage.getItem('isAuthenticated') === 'true';
+    // Check authentication status on page load using auth service
+    const isLoggedIn = authService.isAuthenticated();
     const currentPath = window.location.pathname;
 
     // Redirect to login if not authenticated and not on a public page
@@ -113,7 +56,7 @@ async function initializeApp() {
       // Use client-side navigation to avoid full reload
       Router.go('/login');
     }
-    // Redirect to users if already logged in and trying to access auth pages
+    // Redirect to dashboard if already logged in and trying to access auth pages
     else if (isLoggedIn && ['/login', '/register'].includes(currentPath)) {
       Router.go('/dashboard');
     }

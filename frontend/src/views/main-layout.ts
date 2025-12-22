@@ -8,6 +8,7 @@ import '@vaadin/icons';
 import '@vaadin/text-field';
 import '@vaadin/avatar';
 import { Router } from '@vaadin/router';
+import { authService } from '../services/auth';
 
 declare global {
   interface HTMLElementTagNameMap {
@@ -19,15 +20,22 @@ declare global {
 export class MainLayout extends LitElement {
   private getCurrentUser() {
     try {
+      // Първо опитай auth service
+      const state = authService.getState();
+      if (state.user?.firstName || state.user?.email) {
+        return state.user.firstName || state.user.email.split('@')[0] || 'User';
+      }
+      // Fallback към localStorage
       const user = localStorage.getItem('user');
-      return user ? JSON.parse(user).username || 'User' : 'User';
+      return user ? JSON.parse(user).firstName || JSON.parse(user).username || 'User' : 'User';
     } catch (e) {
       return 'User';
     }
   }
 
   private handleLogout() {
-    localStorage.removeItem('user');
+    // Използвай auth service за правилна очистка
+    authService.logout();
     Router.go('/login');
   }
 
@@ -202,17 +210,162 @@ export class MainLayout extends LitElement {
         }
 
         /* Responsive adjustments */
-        @media (max-width: 768px) {
-          .header {
-            padding: 0 1rem;
+        @media (max-width: 1024px) {
+          .sidebar {
+            width: 14rem;
           }
           
+          .sidebar-header {
+            padding: 1rem 1.25rem;
+          }
+          
+          .nav-item {
+            padding: 0.65rem 1.25rem;
+            font-size: 0.875rem;
+          }
+          
+          .content {
+            padding: 1.25rem;
+          }
+        }
+
+        @media (max-width: 768px) {
+          :host {
+            --vaadin-app-layout-navbar-offset-size: 3.5rem;
+          }
+
+          .header {
+            padding: 0 0.75rem;
+            height: 3.5rem;
+          }
+          
+          .header-left {
+            gap: 0.5rem;
+          }
+
           .app-title {
-            display: none;
+            display: block;
+            font-size: 1rem;
           }
           
           .username {
             display: none;
+          }
+
+          .sidebar {
+            width: 100%;
+            max-width: 280px;
+            position: fixed;
+            left: 0;
+            top: 3.5rem;
+            height: calc(100vh - 3.5rem);
+            z-index: 100;
+            box-shadow: 2px 0 8px rgba(0,0,0,0.15);
+          }
+
+          .sidebar-header {
+            padding: 1rem 1rem;
+            border-bottom: 1px solid var(--lumo-contrast-10pct);
+          }
+
+          .sidebar-header h2 {
+            font-size: 1.1rem;
+          }
+
+          .nav-menu {
+            padding: 0.75rem 0;
+            gap: 0;
+          }
+
+          .nav-item {
+            padding: 0.65rem 1rem;
+            margin: 0;
+            font-size: 0.9rem;
+            border-radius: 0;
+          }
+
+          .nav-item vaadin-icon {
+            margin-right: 0.5rem;
+            width: 1.125rem;
+            height: 1.125rem;
+          }
+
+          .sidebar-footer {
+            padding: 0.75rem;
+            border-top: 1px solid var(--lumo-contrast-10pct);
+          }
+
+          .content {
+            padding: 1rem;
+            background-color: #f9fafb;
+          }
+
+          /* Drawer toggle visibility */
+          vaadin-drawer-toggle {
+            display: inline-flex;
+          }
+        }
+
+        @media (max-width: 480px) {
+          :host {
+            --vaadin-app-layout-navbar-offset-size: 3rem;
+          }
+
+          .header {
+            padding: 0 0.5rem;
+            height: 3rem;
+            gap: 0.5rem;
+          }
+
+          .header-left {
+            gap: 0.25rem;
+          }
+
+          .header-right {
+            gap: 0.5rem;
+          }
+
+          .app-title {
+            font-size: 0.9rem;
+          }
+
+          vaadin-avatar {
+            --lumo-avatar-size: 2rem;
+          }
+
+          .sidebar {
+            max-width: 260px;
+            top: 3rem;
+            height: calc(100vh - 3rem);
+          }
+
+          .sidebar-header {
+            padding: 0.75rem 0.75rem;
+          }
+
+          .sidebar-header h2 {
+            font-size: 1rem;
+          }
+
+          .nav-menu {
+            padding: 0.5rem 0;
+          }
+
+          .nav-item {
+            padding: 0.6rem 0.75rem;
+            font-size: 0.85rem;
+          }
+
+          .sidebar-footer {
+            padding: 0.5rem;
+          }
+
+          .logout-button {
+            font-size: 0.85rem;
+          }
+
+          .content {
+            padding: 0.75rem;
           }
         }
       </style>
