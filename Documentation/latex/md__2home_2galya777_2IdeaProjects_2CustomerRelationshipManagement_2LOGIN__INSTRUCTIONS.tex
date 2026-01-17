@@ -1,0 +1,144 @@
+\chapter{🔐 ЛОГИН ИНСТРУКЦИИ}
+\hypertarget{md__2home_2galya777_2IdeaProjects_2CustomerRelationshipManagement_2LOGIN__INSTRUCTIONS}{}\label{md__2home_2galya777_2IdeaProjects_2CustomerRelationshipManagement_2LOGIN__INSTRUCTIONS}\index{🔐 ЛОГИН ИНСТРУКЦИИ@{🔐 ЛОГИН ИНСТРУКЦИИ}}
+\label{md__2home_2galya777_2IdeaProjects_2CustomerRelationshipManagement_2LOGIN__INSTRUCTIONS_autotoc_md0}%
+\Hypertarget{md__2home_2galya777_2IdeaProjects_2CustomerRelationshipManagement_2LOGIN__INSTRUCTIONS_autotoc_md0}%
+ \hypertarget{md__2home_2galya777_2IdeaProjects_2CustomerRelationshipManagement_2LOGIN__INSTRUCTIONS_autotoc_md1}{}\doxysection{\texorpdfstring{Тестовия Акаунт}{Тестовия Акаунт}}\label{md__2home_2galya777_2IdeaProjects_2CustomerRelationshipManagement_2LOGIN__INSTRUCTIONS_autotoc_md1}
+{\bfseries{Email/\+Username\+:}} {\ttfamily test1} ~\newline
+ {\bfseries{Password\+:}} {\ttfamily 123456789}
+
+\DoxyHorRuler{0}
+\hypertarget{md__2home_2galya777_2IdeaProjects_2CustomerRelationshipManagement_2LOGIN__INSTRUCTIONS_autotoc_md3}{}\doxysection{\texorpdfstring{Как Работи Логин Флоу}{Как Работи Логин Флоу}}\label{md__2home_2galya777_2IdeaProjects_2CustomerRelationshipManagement_2LOGIN__INSTRUCTIONS_autotoc_md3}
+\hypertarget{md__2home_2galya777_2IdeaProjects_2CustomerRelationshipManagement_2LOGIN__INSTRUCTIONS_autotoc_md4}{}\doxysubsection{\texorpdfstring{1. Фронтенда (3000)}{1. Фронтенда (3000)}}\label{md__2home_2galya777_2IdeaProjects_2CustomerRelationshipManagement_2LOGIN__INSTRUCTIONS_autotoc_md4}
+
+\begin{DoxyItemize}
+\item Потребителя въведе {\ttfamily test1} / {\ttfamily 123456789}
+\item Фронтенда съхранява като {\bfseries{username}} в памет
+\item Кликва "{}\+Log in"{}
+\end{DoxyItemize}\hypertarget{md__2home_2galya777_2IdeaProjects_2CustomerRelationshipManagement_2LOGIN__INSTRUCTIONS_autotoc_md5}{}\doxysubsection{\texorpdfstring{2. API Request}{2. API Request}}\label{md__2home_2galya777_2IdeaProjects_2CustomerRelationshipManagement_2LOGIN__INSTRUCTIONS_autotoc_md5}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{POST\ /api/auth/login}
+\DoxyCodeLine{Content-\/Type:\ application/json}
+\DoxyCodeLine{}
+\DoxyCodeLine{\{}
+\DoxyCodeLine{\ \ "{}username"{}:\ "{}test1"{},}
+\DoxyCodeLine{\ \ "{}password"{}:\ "{}123456789"{}}
+\DoxyCodeLine{\}}
+
+\end{DoxyCode}
+\hypertarget{md__2home_2galya777_2IdeaProjects_2CustomerRelationshipManagement_2LOGIN__INSTRUCTIONS_autotoc_md6}{}\doxysubsection{\texorpdfstring{3. Backend (9192)}{3. Backend (9192)}}\label{md__2home_2galya777_2IdeaProjects_2CustomerRelationshipManagement_2LOGIN__INSTRUCTIONS_autotoc_md6}
+
+\begin{DoxyItemize}
+\item Auth\+Controller получава request
+\item Позива {\ttfamily User\+Service.\+authenticate("{}test1"{}, "{}123456789"{})}
+\item User\+Service проверява дали потребителя с email "{}test1"{} е в БД
+\item Проверява дали кодирана парола съответства на "{}123456789"{}
+\item Връща успешен response
+\end{DoxyItemize}\hypertarget{md__2home_2galya777_2IdeaProjects_2CustomerRelationshipManagement_2LOGIN__INSTRUCTIONS_autotoc_md7}{}\doxysubsection{\texorpdfstring{4. Фронтенд Запазване}{4. Фронтенд Запазване}}\label{md__2home_2galya777_2IdeaProjects_2CustomerRelationshipManagement_2LOGIN__INSTRUCTIONS_autotoc_md7}
+
+\begin{DoxyItemize}
+\item Фронтенда запазва authentication состояние в {\ttfamily local\+Storage}\+:
+\begin{DoxyItemize}
+\item {\ttfamily is\+Authenticated\+: true}
+\item {\ttfamily auth\+Header\+: Basic d\+GVzd\+DE6\+MTIz\+NDU2\+Nzg5} (Base64 encoded)
+\item {\ttfamily username\+: test1}
+\item {\ttfamily user\+: \{ ... user data ... \}}
+\end{DoxyItemize}
+\end{DoxyItemize}\hypertarget{md__2home_2galya777_2IdeaProjects_2CustomerRelationshipManagement_2LOGIN__INSTRUCTIONS_autotoc_md8}{}\doxysubsection{\texorpdfstring{5. Логаут}{5. Логаут}}\label{md__2home_2galya777_2IdeaProjects_2CustomerRelationshipManagement_2LOGIN__INSTRUCTIONS_autotoc_md8}
+
+\begin{DoxyItemize}
+\item При логаут, фронтенда чиства всички local\+Storage записи
+\item Връща потребителя към login страницата
+\end{DoxyItemize}
+
+\DoxyHorRuler{0}
+\hypertarget{md__2home_2galya777_2IdeaProjects_2CustomerRelationshipManagement_2LOGIN__INSTRUCTIONS_autotoc_md10}{}\doxysection{\texorpdfstring{Защо Залезе Преди но Сега Не?}{Защо Залезе Преди но Сега Не?}}\label{md__2home_2galya777_2IdeaProjects_2CustomerRelationshipManagement_2LOGIN__INSTRUCTIONS_autotoc_md10}
+{\bfseries{Проблем\+:}} Парола-\/та не бяха кодирани правилно в Data\+Initializer
+
+{\bfseries{Решение\+:}} ~\newline
+
+\begin{DoxyItemize}
+\item Променихме Data\+Initializer да използва {\bfseries{bcrypt}} кодирани пароли
+\item Тестовия акаунт {\ttfamily test1} вече има правилна кодирана парола
+\item Password encoder е конфигурирана да проверява bcrypt хешови
+\end{DoxyItemize}
+
+\DoxyHorRuler{0}
+\hypertarget{md__2home_2galya777_2IdeaProjects_2CustomerRelationshipManagement_2LOGIN__INSTRUCTIONS_autotoc_md12}{}\doxysection{\texorpdfstring{Други Тестови Акаунти}{Други Тестови Акаунти}}\label{md__2home_2galya777_2IdeaProjects_2CustomerRelationshipManagement_2LOGIN__INSTRUCTIONS_autotoc_md12}
+\tabulinesep=1mm
+\begin{longtabu}spread 0pt [c]{*{3}{|X[-1]}|}
+\hline
+\PBS\centering \cellcolor{\tableheadbgcolor}\textbf{ Email   }&\PBS\centering \cellcolor{\tableheadbgcolor}\textbf{ Парола   }&\PBS\centering \cellcolor{\tableheadbgcolor}\textbf{ Роля    }\\\cline{1-3}
+\endfirsthead
+\hline
+\endfoot
+\hline
+\PBS\centering \cellcolor{\tableheadbgcolor}\textbf{ Email   }&\PBS\centering \cellcolor{\tableheadbgcolor}\textbf{ Парола   }&\PBS\centering \cellcolor{\tableheadbgcolor}\textbf{ Роля    }\\\cline{1-3}
+\endhead
+{\ttfamily test1}   &{\ttfamily 123456789}   &CLIENT    \\\cline{1-3}
+{\ttfamily admin@crm.\+com}   &същото като избранич   &ADMIN    \\\cline{1-3}
+{\ttfamily maria@crm.\+com}   &същото   &LEADER    \\\cline{1-3}
+{\ttfamily ivan@crm.\+com}   &същото   &LEADER   \\\cline{1-3}
+\end{longtabu}
+
+
+\DoxyHorRuler{0}
+\hypertarget{md__2home_2galya777_2IdeaProjects_2CustomerRelationshipManagement_2LOGIN__INSTRUCTIONS_autotoc_md14}{}\doxysection{\texorpdfstring{Проверка на Базата}{Проверка на Базата}}\label{md__2home_2galya777_2IdeaProjects_2CustomerRelationshipManagement_2LOGIN__INSTRUCTIONS_autotoc_md14}
+Всички акаунти са инициализирани с {\ttfamily Data\+Initializer.\+java} при стартиране на бекенда.
+
+За проверка на данни\+: 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{URL:\ http://localhost:9192/h2-\/console}
+\DoxyCodeLine{JDBC\ URL:\ jdbc:h2:mem:crmdb}
+\DoxyCodeLine{User:\ sa}
+\DoxyCodeLine{Password:\ (empty)}
+
+\end{DoxyCode}
+
+
+Query\+: 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\textcolor{keyword}{SELECT}\ email,\ password,\ role\ \textcolor{keyword}{FROM}\ \textcolor{stringliteral}{"{}user"{}}\ LIMIT\ \textcolor{stringliteral}{10};}
+
+\end{DoxyCode}
+
+
+\DoxyHorRuler{0}
+\hypertarget{md__2home_2galya777_2IdeaProjects_2CustomerRelationshipManagement_2LOGIN__INSTRUCTIONS_autotoc_md16}{}\doxysection{\texorpdfstring{Логове При Успешен Логин}{Логове При Успешен Логин}}\label{md__2home_2galya777_2IdeaProjects_2CustomerRelationshipManagement_2LOGIN__INSTRUCTIONS_autotoc_md16}
+Backend ще показа\+: 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{Login\ attempt\ for\ username/email:\ test1}
+\DoxyCodeLine{User\ found:\ test1,\ checking\ password\ match}
+\DoxyCodeLine{Password\ matches:\ true}
+\DoxyCodeLine{Login\ successful\ for:\ test1}
+
+\end{DoxyCode}
+
+
+Frontend console\+: 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{[ApiService]\ Login\ successful\ for\ user:\ test1}
+\DoxyCodeLine{[AuthService]\ User\ authenticated:\ test1}
+
+\end{DoxyCode}
+
+
+\DoxyHorRuler{0}
+\hypertarget{md__2home_2galya777_2IdeaProjects_2CustomerRelationshipManagement_2LOGIN__INSTRUCTIONS_autotoc_md18}{}\doxysection{\texorpdfstring{Ако Не Работи}{Ако Не Работи}}\label{md__2home_2galya777_2IdeaProjects_2CustomerRelationshipManagement_2LOGIN__INSTRUCTIONS_autotoc_md18}
+
+\begin{DoxyEnumerate}
+\item {\bfseries{Проверете дали бекенда е стартиран\+:}} 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{curl\ http://localhost:9192/h2-\/console}
+
+\end{DoxyCode}
+
+\item {\bfseries{Проверете логовете на бекенда}} за "{}\+Login attempt"{} съобщение
+\item {\bfseries{Проверете local\+Storage в фронтенда (Dev\+Tools → Application → Local Storage)}}
+\item {\bfseries{Проверете че пароля е точно {\ttfamily 123456789}}} (без spaces)
+\item {\bfseries{Рестартирайте оба сервъра}} (убийте процесите и стартирайте отново)
+\end{DoxyEnumerate}
+
+\DoxyHorRuler{0}
+\hypertarget{md__2home_2galya777_2IdeaProjects_2CustomerRelationshipManagement_2LOGIN__INSTRUCTIONS_autotoc_md20}{}\doxysection{\texorpdfstring{🎯 ВАЖНО}{🎯 ВАЖНО}}\label{md__2home_2galya777_2IdeaProjects_2CustomerRelationshipManagement_2LOGIN__INSTRUCTIONS_autotoc_md20}
+Логин системата работи правилно сега. Всяко излизане и влизане трябва да работи без проблеми. 

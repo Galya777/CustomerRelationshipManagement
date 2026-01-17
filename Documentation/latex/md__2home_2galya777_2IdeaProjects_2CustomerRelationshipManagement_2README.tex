@@ -1,0 +1,200 @@
+\chapter{Customer Relationship Management (CRM) System}
+\hypertarget{md__2home_2galya777_2IdeaProjects_2CustomerRelationshipManagement_2README}{}\label{md__2home_2galya777_2IdeaProjects_2CustomerRelationshipManagement_2README}\index{Customer Relationship Management (CRM) System@{Customer Relationship Management (CRM) System}}
+\label{md__2home_2galya777_2IdeaProjects_2CustomerRelationshipManagement_2README_autotoc_md21}%
+\Hypertarget{md__2home_2galya777_2IdeaProjects_2CustomerRelationshipManagement_2README_autotoc_md21}%
+ A Spring Boot–centric CRM system that provides a secured REST API and persistence layer, with a Type\+Script (Vaadin + Lit) frontend client.\hypertarget{md__2home_2galya777_2IdeaProjects_2CustomerRelationshipManagement_2README_autotoc_md22}{}\doxysection{\texorpdfstring{Tech Stack}{Tech Stack}}\label{md__2home_2galya777_2IdeaProjects_2CustomerRelationshipManagement_2README_autotoc_md22}
+\hypertarget{md__2home_2galya777_2IdeaProjects_2CustomerRelationshipManagement_2README_autotoc_md23}{}\doxysubsection{\texorpdfstring{Backend (main component)}{Backend (main component)}}\label{md__2home_2galya777_2IdeaProjects_2CustomerRelationshipManagement_2README_autotoc_md23}
+
+\begin{DoxyItemize}
+\item Spring Boot 3
+\item Spring Web (REST)
+\item Spring Security (stateless API, HTTP Basic)
+\item Spring Data JPA + Hibernate
+\item H2 (in-\/memory database)
+\end{DoxyItemize}\hypertarget{md__2home_2galya777_2IdeaProjects_2CustomerRelationshipManagement_2README_autotoc_md24}{}\doxysubsection{\texorpdfstring{Frontend (client)}{Frontend (client)}}\label{md__2home_2galya777_2IdeaProjects_2CustomerRelationshipManagement_2README_autotoc_md24}
+
+\begin{DoxyItemize}
+\item Type\+Script
+\item Vite dev server
+\item Vaadin components + Lit
+\end{DoxyItemize}\hypertarget{md__2home_2galya777_2IdeaProjects_2CustomerRelationshipManagement_2README_autotoc_md25}{}\doxysection{\texorpdfstring{Getting Started}{Getting Started}}\label{md__2home_2galya777_2IdeaProjects_2CustomerRelationshipManagement_2README_autotoc_md25}
+\hypertarget{md__2home_2galya777_2IdeaProjects_2CustomerRelationshipManagement_2README_autotoc_md26}{}\doxysubsection{\texorpdfstring{Prerequisites}{Prerequisites}}\label{md__2home_2galya777_2IdeaProjects_2CustomerRelationshipManagement_2README_autotoc_md26}
+
+\begin{DoxyItemize}
+\item Node.\+js (v18 or later)
+\item npm (v6 or later) or Yarn
+\item Java 20 or later (backend)
+\end{DoxyItemize}\hypertarget{md__2home_2galya777_2IdeaProjects_2CustomerRelationshipManagement_2README_autotoc_md27}{}\doxysubsection{\texorpdfstring{Installation}{Installation}}\label{md__2home_2galya777_2IdeaProjects_2CustomerRelationshipManagement_2README_autotoc_md27}
+
+\begin{DoxyEnumerate}
+\item Clone the repository\+: 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{git\ clone\ <repository-\/url>}
+\DoxyCodeLine{cd\ CustomerRelationshipManagement}
+
+\end{DoxyCode}
+
+\item Install backend dependencies\+: 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{mvn\ install}
+
+\end{DoxyCode}
+
+\item Install frontend dependencies\+: 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{cd\ frontend}
+\DoxyCodeLine{npm\ install}
+
+\end{DoxyCode}
+
+\end{DoxyEnumerate}\hypertarget{md__2home_2galya777_2IdeaProjects_2CustomerRelationshipManagement_2README_autotoc_md28}{}\doxysection{\texorpdfstring{Running the Application}{Running the Application}}\label{md__2home_2galya777_2IdeaProjects_2CustomerRelationshipManagement_2README_autotoc_md28}
+\hypertarget{md__2home_2galya777_2IdeaProjects_2CustomerRelationshipManagement_2README_autotoc_md29}{}\doxysubsection{\texorpdfstring{Development Mode}{Development Mode}}\label{md__2home_2galya777_2IdeaProjects_2CustomerRelationshipManagement_2README_autotoc_md29}
+
+\begin{DoxyEnumerate}
+\item Start the backend server\+: 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{mvn\ spring-\/boot:run}
+
+\end{DoxyCode}
+ The backend will be available at {\ttfamily \href{http://localhost:9192}{\texttt{ http\+://localhost\+:9192}}}
+\item Start the frontend development server\+: 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{cd\ frontend}
+\DoxyCodeLine{npm\ run\ dev}
+
+\end{DoxyCode}
+ This will start the Vite development server at {\ttfamily \href{http://localhost:3000}{\texttt{ http\+://localhost\+:3000}}}. API requests to {\ttfamily /api} are proxied to the Spring Boot server.
+\end{DoxyEnumerate}\hypertarget{md__2home_2galya777_2IdeaProjects_2CustomerRelationshipManagement_2README_autotoc_md30}{}\doxysubsection{\texorpdfstring{Production Build}{Production Build}}\label{md__2home_2galya777_2IdeaProjects_2CustomerRelationshipManagement_2README_autotoc_md30}
+
+\begin{DoxyEnumerate}
+\item Build the frontend for production\+: 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{cd\ frontend}
+\DoxyCodeLine{npm\ run\ build}
+
+\end{DoxyCode}
+
+\item The built files will be in the {\ttfamily frontend/dist} directory.
+\end{DoxyEnumerate}\hypertarget{md__2home_2galya777_2IdeaProjects_2CustomerRelationshipManagement_2README_autotoc_md31}{}\doxysection{\texorpdfstring{Backend Architecture}{Backend Architecture}}\label{md__2home_2galya777_2IdeaProjects_2CustomerRelationshipManagement_2README_autotoc_md31}
+The backend follows a typical layered Spring Boot structure\+:
+
+
+\begin{DoxyItemize}
+\item {\ttfamily controllers/} expose REST endpoints under {\ttfamily /api/\texorpdfstring{$\ast$}{*}\texorpdfstring{$\ast$}{*}}
+\item {\ttfamily services/} contain business logic
+\item {\ttfamily repositories/} contain persistence access (Spring Data)
+\item {\ttfamily entities/} contain JPA entities
+\end{DoxyItemize}\hypertarget{md__2home_2galya777_2IdeaProjects_2CustomerRelationshipManagement_2README_autotoc_md32}{}\doxysection{\texorpdfstring{Security \& Authentication}{Security \& Authentication}}\label{md__2home_2galya777_2IdeaProjects_2CustomerRelationshipManagement_2README_autotoc_md32}
+
+\begin{DoxyItemize}
+\item All endpoints under {\ttfamily /api/\texorpdfstring{$\ast$}{*}\texorpdfstring{$\ast$}{*}} require authentication by default.
+\item Public endpoints\+:
+\begin{DoxyItemize}
+\item {\ttfamily POST /api/auth/login}
+\item {\ttfamily POST /api/auth/register}
+\item {\ttfamily POST /api/users/register}
+\end{DoxyItemize}
+\item Authentication is configured as {\bfseries{stateless}}. Unauthorized requests return {\ttfamily 401}.
+\item The project currently uses {\bfseries{HTTP Basic}} for protected endpoints.
+\end{DoxyItemize}
+
+API documentation (Swagger UI / Open\+API)\+:
+
+
+\begin{DoxyItemize}
+\item Swagger UI\+: {\ttfamily \href{http://localhost:9192/swagger-ui/index.html}{\texttt{ http\+://localhost\+:9192/swagger-\/ui/index.\+html}}}
+\item Open\+API JSON\+: {\ttfamily \href{http://localhost:9192/v3/api-docs}{\texttt{ http\+://localhost\+:9192/v3/api-\/docs}}}
+\end{DoxyItemize}
+
+Actuator\+:
+
+
+\begin{DoxyItemize}
+\item Health\+: {\ttfamily \href{http://localhost:9192/actuator/health}{\texttt{ http\+://localhost\+:9192/actuator/health}}}
+\item Info\+: {\ttfamily \href{http://localhost:9192/actuator/info}{\texttt{ http\+://localhost\+:9192/actuator/info}}}
+\end{DoxyItemize}\hypertarget{md__2home_2galya777_2IdeaProjects_2CustomerRelationshipManagement_2README_autotoc_md33}{}\doxysection{\texorpdfstring{Test Account}{Test Account}}\label{md__2home_2galya777_2IdeaProjects_2CustomerRelationshipManagement_2README_autotoc_md33}
+For testing purposes, you can use the following credentials\+:
+
+
+\begin{DoxyItemize}
+\item {\bfseries{Username}}\+: test1
+\item {\bfseries{Password}}\+: 123456789
+\end{DoxyItemize}\hypertarget{md__2home_2galya777_2IdeaProjects_2CustomerRelationshipManagement_2README_autotoc_md34}{}\doxysection{\texorpdfstring{Database}{Database}}\label{md__2home_2galya777_2IdeaProjects_2CustomerRelationshipManagement_2README_autotoc_md34}
+
+\begin{DoxyItemize}
+\item Default DB\+: H2 in-\/memory
+\item H2 console\+: {\ttfamily \href{http://localhost:9192/h2-console}{\texttt{ http\+://localhost\+:9192/h2-\/console}}}
+\end{DoxyItemize}\hypertarget{md__2home_2galya777_2IdeaProjects_2CustomerRelationshipManagement_2README_autotoc_md35}{}\doxysection{\texorpdfstring{API Quickstart}{API Quickstart}}\label{md__2home_2galya777_2IdeaProjects_2CustomerRelationshipManagement_2README_autotoc_md35}
+The fastest way to verify the backend is running\+:
+
+
+\begin{DoxyEnumerate}
+\item Start Spring Boot\+: {\ttfamily mvn spring-\/boot\+:run}
+\item Call a protected endpoint with HTTP Basic auth\+:
+\end{DoxyEnumerate}
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{curl\ -\/u\ test1:123456789\ http://localhost:9192/api/users/me}
+
+\end{DoxyCode}
+\hypertarget{md__2home_2galya777_2IdeaProjects_2CustomerRelationshipManagement_2README_autotoc_md36}{}\doxysection{\texorpdfstring{Project Structure}{Project Structure}}\label{md__2home_2galya777_2IdeaProjects_2CustomerRelationshipManagement_2README_autotoc_md36}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{src/main/java/\ \ \ \ \ \ \ \ \ \#\ Spring\ Boot\ backend\ (controllers/services/repositories/entities)}
+\DoxyCodeLine{src/main/resources/\ \ \ \ \#\ application.properties,\ static\ resources}
+\DoxyCodeLine{}
+\DoxyCodeLine{frontend/}
+\DoxyCodeLine{├──\ public/\ \ \ \ \ \ \ \ \ \ \ \#\ Static\ files}
+\DoxyCodeLine{├──\ src/}
+\DoxyCodeLine{│\ \ \ ├──\ views/\ \ \ \ \ \ \ \ \#\ Application\ views}
+\DoxyCodeLine{│\ \ \ ├──\ index.ts\ \ \ \ \ \ \#\ Application\ entry\ point}
+\DoxyCodeLine{│\ \ \ └──\ routes.ts\ \ \ \ \ \#\ Application\ routes}
+\DoxyCodeLine{├──\ index.html\ \ \ \ \ \ \ \ \#\ Main\ HTML\ file}
+\DoxyCodeLine{├──\ package.json\ \ \ \ \ \ \#\ Frontend\ dependencies}
+\DoxyCodeLine{└──\ tsconfig.json\ \ \ \ \ \#\ TypeScript\ configuration}
+
+\end{DoxyCode}
+\hypertarget{md__2home_2galya777_2IdeaProjects_2CustomerRelationshipManagement_2README_autotoc_md37}{}\doxysection{\texorpdfstring{Available Scripts}{Available Scripts}}\label{md__2home_2galya777_2IdeaProjects_2CustomerRelationshipManagement_2README_autotoc_md37}
+
+\begin{DoxyItemize}
+\item {\ttfamily npm run dev} -\/ Start development server
+\item {\ttfamily npm run build} -\/ Build for production
+\item {\ttfamily npm run preview} -\/ Preview production build
+\item {\ttfamily npm run lint} -\/ Run ESLint
+\item {\ttfamily mvn spring-\/boot\+:run} -\/ Start backend server
+\end{DoxyItemize}\hypertarget{md__2home_2galya777_2IdeaProjects_2CustomerRelationshipManagement_2README_autotoc_md38}{}\doxysection{\texorpdfstring{Development}{Development}}\label{md__2home_2galya777_2IdeaProjects_2CustomerRelationshipManagement_2README_autotoc_md38}
+\hypertarget{md__2home_2galya777_2IdeaProjects_2CustomerRelationshipManagement_2README_autotoc_md39}{}\doxysubsection{\texorpdfstring{Backend (main focus)}{Backend (main focus)}}\label{md__2home_2galya777_2IdeaProjects_2CustomerRelationshipManagement_2README_autotoc_md39}
+
+\begin{DoxyItemize}
+\item Spring Boot REST API under {\ttfamily /api/\texorpdfstring{$\ast$}{*}\texorpdfstring{$\ast$}{*}}
+\item Spring Security enabled (stateless, returns {\ttfamily 401} for unauthorized API calls)
+\item Spring Data JPA + H2 (in-\/memory) for persistence
+\end{DoxyItemize}
+
+Useful URLs when the backend is running\+:
+
+
+\begin{DoxyItemize}
+\item {\ttfamily \href{http://localhost:9192/api}{\texttt{ http\+://localhost\+:9192/api}}} (API base path)
+\item {\ttfamily \href{http://localhost:9192/h2-console}{\texttt{ http\+://localhost\+:9192/h2-\/console}}} (H2 console)
+\item {\ttfamily \href{http://localhost:9192/swagger-ui/index.html}{\texttt{ http\+://localhost\+:9192/swagger-\/ui/index.\+html}}} (Swagger UI)
+\item {\ttfamily \href{http://localhost:9192/actuator/health}{\texttt{ http\+://localhost\+:9192/actuator/health}}} (Actuator health)
+\end{DoxyItemize}
+
+Key API endpoints (non-\/exhaustive)\+:
+
+
+\begin{DoxyItemize}
+\item {\ttfamily POST /api/auth/login}
+\item {\ttfamily POST /api/auth/register}
+\item {\ttfamily GET /api/users/me}
+\item {\ttfamily GET /api/products}
+\item {\ttfamily GET /api/groups}
+\end{DoxyItemize}\hypertarget{md__2home_2galya777_2IdeaProjects_2CustomerRelationshipManagement_2README_autotoc_md40}{}\doxysubsection{\texorpdfstring{Frontend (client)}{Frontend (client)}}\label{md__2home_2galya777_2IdeaProjects_2CustomerRelationshipManagement_2README_autotoc_md40}
+
+\begin{DoxyItemize}
+\item Type\+Script + Vite dev server
+\item Vaadin components + Lit for UI
+\end{DoxyItemize}\hypertarget{md__2home_2galya777_2IdeaProjects_2CustomerRelationshipManagement_2README_autotoc_md41}{}\doxysection{\texorpdfstring{License}{License}}\label{md__2home_2galya777_2IdeaProjects_2CustomerRelationshipManagement_2README_autotoc_md41}
+This project is licensed under the MIT License -\/ see the \mbox{[}LICENSE\mbox{]}(LICENSE) file for details. 
